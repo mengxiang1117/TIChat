@@ -87,6 +87,15 @@
     margin-bottom: 32px;
   }
 
+  /* 触摸设备优化 */
+  .card {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .card:active {
+    transform: scale(0.98);
+  }
+
   .card {
     background: var(--card);
     border: 1px solid var(--card-border);
@@ -152,9 +161,71 @@
     }
   }
 
+  /* 平板设备 - 2列 */
+  @media (max-width: 900px) {
+    .cards {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+    }
+    .header h1 { font-size: 36px; }
+    .card { padding: 28px 20px; }
+    .card .icon {
+      width: 64px;
+      height: 64px;
+      font-size: 28px;
+    }
+    .card h2 { font-size: 20px; }
+  }
+
+  /* 手机设备 - 1列 */
   @media (max-width: 640px) {
-    .header h1 { font-size: 32px; }
-    .cards { grid-template-columns: 1fr; }
+    body {
+      padding: 16px;
+    }
+    .header {
+      margin-bottom: 32px;
+    }
+    .header h1 {
+      font-size: 28px;
+    }
+    .header p {
+      font-size: 14px;
+    }
+    .cards {
+      grid-template-columns: 1fr;
+      gap: 14px;
+    }
+    .card {
+      padding: 24px 20px;
+    }
+    .card .icon {
+      width: 60px;
+      height: 60px;
+      font-size: 26px;
+      margin-bottom: 16px;
+    }
+    .card h2 {
+      font-size: 18px;
+      margin-bottom: 6px;
+    }
+    .card p {
+      font-size: 13px;
+    }
+    .footer {
+      font-size: 12px;
+      margin-top: 24px;
+    }
+  }
+
+  /* 小屏手机优化 */
+  @media (max-width: 380px) {
+    .header h1 { font-size: 24px; }
+    .card { padding: 20px 16px; }
+    .card .icon {
+      width: 54px;
+      height: 54px;
+      font-size: 24px;
+    }
   }
 </style>
 </head>
