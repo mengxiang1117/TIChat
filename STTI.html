@@ -33,7 +33,7 @@
     overflow-x: hidden;
   }
 
-  /* 背景装饰 */
+  /* 背景装饰 - 简化，无动画 */
   .bg-decor {
     position: fixed;
     inset: 0;
@@ -45,27 +45,20 @@
     position: absolute;
     border-radius: 50%;
     filter: blur(100px);
-    opacity: 0.15;
-    animation: orbFloat 20s ease-in-out infinite alternate;
+    opacity: 0.12;
   }
   .bg-decor .orb1 {
-    width: 500px; height: 500px;
+    width: 400px; height: 400px;
     background: var(--accent);
-    top: -150px; left: -100px;
+    top: -100px; left: -80px;
   }
   .bg-decor .orb2 {
-    width: 400px; height: 400px;
+    width: 350px; height: 350px;
     background: var(--accent2);
-    bottom: -100px; right: -80px;
-    animation-delay: -10s;
+    bottom: -80px; right: -60px;
   }
   .bg-decor .orb3 {
-    width: 300px; height: 300px;
-    background: var(--gold);
-    top: 50%; left: 50%;
-    transform: translate(-50%, -50%);
-    opacity: 0.06;
-    animation-delay: -5s;
+    display: none;
   }
 
   /* 网格背景 */
@@ -75,9 +68,9 @@
     pointer-events: none;
     z-index: 0;
     background-image:
-      linear-gradient(rgba(255,82,82,0.03) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(255,82,82,0.03) 1px, transparent 1px);
-    background-size: 60px 60px;
+      linear-gradient(rgba(255,82,82,0.02) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,82,82,0.02) 1px, transparent 1px);
+    background-size: 80px 80px;
   }
 
   /* 主容器 */
@@ -124,11 +117,6 @@
     color: var(--accent);
     margin-bottom: 32px;
     box-shadow: 0 0 50px rgba(255,82,82,0.2);
-    animation: pulse 3s ease-in-out infinite;
-  }
-  @keyframes pulse {
-    0%, 100% { box-shadow: 0 0 50px rgba(255,82,82,0.2); }
-    50% { box-shadow: 0 0 80px rgba(255,82,82,0.4); }
   }
   .start-page .subtitle {
     color: var(--fg);
@@ -254,15 +242,6 @@
     border: 1px solid var(--card-border);
     border-radius: var(--radius);
     padding: 32px 28px;
-    transition: opacity 0.35s ease, transform 0.35s ease;
-  }
-  .question-card.fade-out {
-    opacity: 0;
-    transform: translateX(-40px);
-  }
-  .question-card.fade-in {
-    opacity: 0;
-    transform: translateX(40px);
   }
   .question-card .q-text {
     font-size: 18px;
@@ -408,7 +387,6 @@
   .dim-bar-fill {
     height: 100%;
     border-radius: 4px;
-    transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
   }
   .dim-bar-fill.L { background: var(--danger); }
   .dim-bar-fill.M { background: var(--gold); }
@@ -486,18 +464,6 @@
     background: rgba(0,230,118,0.04);
   }
 
-  /* 动画 */
-  @keyframes fadeInUp {
-    from { opacity: 0; transform: translateY(30px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-  .animate-in {
-    animation: fadeInUp 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-  }
-  .delay-1 { animation-delay: 0.1s; opacity: 0; }
-  .delay-2 { animation-delay: 0.2s; opacity: 0; }
-  .delay-3 { animation-delay: 0.3s; opacity: 0; }
-  .delay-4 { animation-delay: 0.4s; opacity: 0; }
 
   /* Toast 提示 */
   .toast {
@@ -538,17 +504,7 @@
     }
   }
 
-  /* K线装饰动画 */
-  .kline-decor {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    height: 120px;
-    pointer-events: none;
-    z-index: 0;
-    opacity: 0.04;
-  }
+
 </style>
 </head>
 <body>
@@ -556,12 +512,8 @@
 <div class="bg-decor">
   <div class="orb orb1"></div>
   <div class="orb orb2"></div>
-  <div class="orb orb3"></div>
 </div>
 <div class="bg-grid"></div>
-
-<!-- K线装饰 canvas -->
-<canvas class="kline-decor" id="klineCanvas"></canvas>
 
 <!-- Toast -->
 <div class="toast" id="toast"></div>
@@ -620,25 +572,25 @@
   <!-- ===== 结果页 ===== -->
   <div class="page" id="resultPage">
     <div class="result-container">
-      <div class="result-header animate-in delay-1">
+      <div class="result-header">
         <div class="tag">你的股民人格</div>
         <div class="type-code" id="resCode">GOD</div>
         <div class="type-name" id="resName">股神</div>
         <div class="match-pct">匹配度 <b id="resMatch">95</b>%</div>
       </div>
 
-      <div class="dim-radar animate-in delay-2">
+      <div class="dim-radar">
         <h3><i class="fas fa-chart-bar" style="margin-right:6px;"></i>维度分析</h3>
         <div class="dim-bars" id="dimBars"></div>
       </div>
 
-      <div class="desc-card animate-in delay-3">
+      <div class="desc-card">
         <h3><i class="fas fa-scroll" style="margin-right:6px;"></i>人格解读</h3>
         <p id="resDesc">描述文字</p>
         <div class="traits" id="resTraits"></div>
       </div>
 
-      <button class="btn-secondary animate-in delay-4" onclick="restartQuiz()">
+      <button class="btn-secondary" onclick="restartQuiz()">
         <i class="fas fa-redo" style="margin-right:8px;"></i>重新测试
       </button>
     </div>
@@ -974,33 +926,19 @@ function renderQuestion() {
   document.getElementById('progressFill').style.width = ((currentQ + 1) / QUESTIONS.length * 100) + '%';
   document.getElementById('dimLabel').textContent = dim.group;
 
-  // 动画：先淡出
-  card.classList.add('fade-out');
+  // 直接更新内容，无动画
+  document.getElementById('qText').textContent = q.text;
+  const container = document.getElementById('optionsContainer');
+  container.innerHTML = '';
 
-  setTimeout(() => {
-    // 更新内容
-    document.getElementById('qText').textContent = q.text;
-    const container = document.getElementById('optionsContainer');
-    container.innerHTML = '';
-
-    q.opts.forEach((opt, idx) => {
-      const btn = document.createElement('button');
-      btn.className = 'option-btn';
-      btn.setAttribute('aria-label', '选项' + opt.letter);
-      btn.innerHTML = `<span class="opt-letter">${opt.letter}</span><span>${opt.text}</span>`;
-      btn.addEventListener('click', () => selectOption(opt.score, btn));
-      container.appendChild(btn);
-    });
-
-    // 动画：淡入
-    card.classList.remove('fade-out');
-    card.classList.add('fade-in');
-    requestAnimationFrame(() => {
-      requestAnimationFrame(() => {
-        card.classList.remove('fade-in');
-      });
-    });
-  }, 300);
+  q.opts.forEach((opt, idx) => {
+    const btn = document.createElement('button');
+    btn.className = 'option-btn';
+    btn.setAttribute('aria-label', '选项' + opt.letter);
+    btn.innerHTML = `<span class="opt-letter">${opt.letter}</span><span>${opt.text}</span>`;
+    btn.addEventListener('click', () => selectOption(opt.score, btn));
+    container.appendChild(btn);
+  });
 }
 
 // 选择选项
@@ -1026,12 +964,11 @@ function selectOption(score, btnEl) {
       bonusStep = 1;
       renderBonusQuestion();
     }
-  }, 500);
+  }, 200);
 }
 
 // 渲染补充题
 function renderBonusQuestion() {
-  const card = document.getElementById('questionCard');
   const qData = bonusStep === 1 ? BONUS_Q1 : BONUS_Q2;
 
   document.getElementById('qCurrent').textContent = '31';
@@ -1039,29 +976,18 @@ function renderBonusQuestion() {
   document.getElementById('progressFill').style.width = '100%';
   document.getElementById('dimLabel').textContent = '隐藏触发题';
 
-  card.classList.add('fade-out');
-  setTimeout(() => {
-    document.getElementById('qText').textContent = qData.text;
-    const container = document.getElementById('optionsContainer');
-    container.innerHTML = '';
+  document.getElementById('qText').textContent = qData.text;
+  const container = document.getElementById('optionsContainer');
+  container.innerHTML = '';
 
-    qData.opts.forEach((opt, idx) => {
-      const btn = document.createElement('button');
-      btn.className = 'option-btn';
-      btn.setAttribute('aria-label', '选项' + opt.letter);
-      btn.innerHTML = `<span class="opt-letter">${opt.letter}</span><span>${opt.text}</span>`;
-      btn.addEventListener('click', () => selectBonusOption(opt, btn));
-      container.appendChild(btn);
-    });
-
-    card.classList.remove('fade-out');
-    card.classList.add('fade-in');
-    requestAnimationFrame(() => {
-      requestAnimationFrame(() => {
-        card.classList.remove('fade-in');
-      });
-    });
-  }, 300);
+  qData.opts.forEach((opt, idx) => {
+    const btn = document.createElement('button');
+    btn.className = 'option-btn';
+    btn.setAttribute('aria-label', '选项' + opt.letter);
+    btn.innerHTML = `<span class="opt-letter">${opt.letter}</span><span>${opt.text}</span>`;
+    btn.addEventListener('click', () => selectBonusOption(opt, btn));
+    container.appendChild(btn);
+  });
 }
 
 // 选择补充题选项
@@ -1074,12 +1000,12 @@ function selectBonusOption(opt, btnEl) {
 
   if (opt.next === 'drunk') {
     isDrunk = true;
-    setTimeout(() => showResult(), 600);
+    setTimeout(() => showResult(), 200);
   } else if (opt.next === 'bonus2') {
     bonusStep = 2;
-    setTimeout(() => renderBonusQuestion(), 500);
+    setTimeout(() => renderBonusQuestion(), 200);
   } else {
-    setTimeout(() => showResult(), 600);
+    setTimeout(() => showResult(), 200);
   }
 }
 
@@ -1176,15 +1102,10 @@ function renderDimBars() {
     row.className = 'dim-row';
     row.innerHTML = `
       <span class="dim-label" title="${desc}">${d.name}</span>
-      <div class="dim-bar-bg"><div class="dim-bar-fill ${level}" style="width:0"></div></div>
+      <div class="dim-bar-bg"><div class="dim-bar-fill ${level}" style="width:${level === 'L' ? '33.3' : level === 'M' ? '66.6' : '100'}%"></div></div>
       <span class="dim-level ${level}">${level}</span>
     `;
     container.appendChild(row);
-
-    // 动画延迟填充
-    setTimeout(() => {
-      row.querySelector('.dim-bar-fill').style.width = level === 'L' ? '33.3%' : level === 'M' ? '66.6%' : '100%';
-    }, 300 + i * 80);
   });
 }
 
@@ -1205,85 +1126,6 @@ function showToast(msg) {
   t.classList.add('show');
   setTimeout(() => t.classList.remove('show'), 2500);
 }
-
-// ===== K线背景装饰 =====
-const canvas = document.getElementById('klineCanvas');
-const ctx = canvas.getContext('2d');
-let w, h;
-const bars = [];
-const BAR_COUNT = 40;
-
-function resize() {
-  w = canvas.parentElement.clientWidth;
-  h = 120;
-  canvas.width = w;
-  canvas.height = h;
-}
-
-function initBars() {
-  bars.length = 0;
-  let price = 60;
-  for (let i = 0; i < BAR_COUNT; i++) {
-    const open = price;
-    const change = (Math.random() - 0.48) * 15;
-    const close = open + change;
-    const high = Math.max(open, close) + Math.random() * 8;
-    const low = Math.min(open, close) - Math.random() * 8;
-    bars.push({ open, close, high, low });
-    price = close;
-  }
-}
-
-function draw() {
-  ctx.clearRect(0, 0, w, h);
-  const barW = Math.max(2, w / BAR_COUNT - 2);
-  const gap = w / BAR_COUNT;
-  const scale = h / 150;
-  const offset = 30;
-
-  bars.forEach((b, i) => {
-    const x = i * gap + gap / 2;
-    const isUp = b.close >= b.open;
-    ctx.strokeStyle = isUp ? '#ff5252' : '#00e676';
-    ctx.fillStyle = isUp ? '#ff5252' : '#00e676';
-    ctx.lineWidth = 1;
-
-    // 影线
-    ctx.beginPath();
-    ctx.moveTo(x, h - (b.high - offset) * scale);
-    ctx.lineTo(x, h - (b.low - offset) * scale);
-    ctx.stroke();
-
-    // 实体
-    const top = h - (Math.max(b.open, b.close) - offset) * scale;
-    const bottom = h - (Math.min(b.open, b.close) - offset) * scale;
-    const bodyH = Math.max(1, bottom - top);
-    if (isUp) {
-      ctx.strokeRect(x - barW / 2, top, barW, bodyH);
-    } else {
-      ctx.fillRect(x - barW / 2, top, barW, bodyH);
-    }
-  });
-
-  // 定期添加新K线
-  if (Math.random() < 0.03) {
-    const last = bars[bars.length - 1];
-    const open = last.close;
-    const change = (Math.random() - 0.48) * 15;
-    const close = open + change;
-    const high = Math.max(open, close) + Math.random() * 8;
-    const low = Math.min(open, close) - Math.random() * 8;
-    bars.push({ open, close, high, low });
-    if (bars.length > BAR_COUNT) bars.shift();
-  }
-
-  requestAnimationFrame(draw);
-}
-
-resize();
-initBars();
-draw();
-window.addEventListener('resize', () => { resize(); initBars(); });
 
 // 键盘支持：1/A, 2/B, 3/C 快捷选择
 document.addEventListener('keydown', (e) => {

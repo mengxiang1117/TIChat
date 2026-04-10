@@ -36,38 +36,30 @@
     overflow-x: hidden;
   }
 
-  /* 背景装饰 */
+  /* 背景装饰 - 简化版本，无动画 */
   .bg-decor {
     position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden;
   }
   .bg-decor .blob {
-    position: absolute; border-radius: 50%; filter: blur(80px); opacity: 0.35;
+    position: absolute; border-radius: 50%; filter: blur(80px); opacity: 0.25;
   }
   .bg-decor .blob-1 {
-    width: 500px; height: 500px; background: #c8956a; top: -150px; right: -100px;
-    animation: blobFloat 18s ease-in-out infinite;
+    width: 400px; height: 400px; background: #c8956a; top: -100px; right: -80px;
   }
   .bg-decor .blob-2 {
-    width: 400px; height: 400px; background: #8b7355; bottom: -100px; left: -80px;
-    animation: blobFloat 22s ease-in-out infinite reverse;
+    width: 350px; height: 350px; background: #8b7355; bottom: -80px; left: -60px;
   }
   .bg-decor .blob-3 {
-    width: 300px; height: 300px; background: #d4a574; top: 50%; left: 50%; transform: translate(-50%, -50%);
-    animation: blobFloat 15s ease-in-out infinite;
-  }
-  @keyframes blobFloat {
-    0%, 100% { transform: translate(0, 0) scale(1); }
-    33% { transform: translate(30px, -20px) scale(1.05); }
-    66% { transform: translate(-20px, 15px) scale(0.95); }
+    display: none;
   }
 
   /* 细微网格背景 */
   .bg-grid {
     position: fixed; inset: 0; z-index: 0; pointer-events: none;
     background-image:
-      linear-gradient(rgba(160,113,79,0.04) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(160,113,79,0.04) 1px, transparent 1px);
-    background-size: 40px 40px;
+      linear-gradient(rgba(160,113,79,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(160,113,79,0.03) 1px, transparent 1px);
+    background-size: 60px 60px;
   }
 
   /* 主容器 */
@@ -87,13 +79,8 @@
     background: linear-gradient(135deg, var(--accent), var(--accent-light));
     display: flex; align-items: center; justify-content: center;
     box-shadow: 0 8px 32px rgba(160, 113, 79, 0.3);
-    animation: iconPulse 3s ease-in-out infinite;
   }
   .start-screen .icon-circle i { font-size: 42px; color: #fff; }
-  @keyframes iconPulse {
-    0%, 100% { transform: scale(1); box-shadow: 0 8px 32px rgba(160,113,79,0.3); }
-    50% { transform: scale(1.05); box-shadow: 0 12px 40px rgba(160,113,79,0.4); }
-  }
   .start-screen h1 {
     font-size: 42px; font-weight: 900; letter-spacing: -1px; line-height: 1.2;
     margin-bottom: 8px;
@@ -212,31 +199,14 @@
   }
   .option-btn.selected {
     border-color: var(--accent); background: var(--accent-glow);
-    animation: optionPop 0.3s ease;
   }
   .option-btn.selected .option-letter {
     background: var(--accent); border-color: var(--accent); color: #fff;
   }
-  @keyframes optionPop {
-    0% { transform: scale(1); }
-    50% { transform: scale(1.02); }
-    100% { transform: scale(1); }
-  }
 
-  /* 题目切换动画 */
-  .question-card.entering {
-    animation: cardEnter 0.45s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
-  }
-  .question-card.exiting {
-    animation: cardExit 0.3s cubic-bezier(0.4, 0, 1, 1) forwards;
-  }
-  @keyframes cardEnter {
-    from { opacity: 0; transform: translateY(30px) scale(0.97); }
-    to { opacity: 1; transform: translateY(0) scale(1); }
-  }
-  @keyframes cardExit {
-    from { opacity: 1; transform: translateY(0) scale(1); }
-    to { opacity: 0; transform: translateY(-20px) scale(0.97); }
+  /* 题目切换 - 无复杂动画，直接显示 */
+  .question-card {
+    opacity: 1;
   }
 
   /* ========== 结果页 ========== */
@@ -249,11 +219,6 @@
     display: flex; align-items: center; justify-content: center;
     font-size: 36px; font-weight: 900; color: #fff;
     box-shadow: 0 12px 40px rgba(0,0,0,0.15);
-    animation: resultBadgePop 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) 0.2s both;
-  }
-  @keyframes resultBadgePop {
-    from { opacity: 0; transform: scale(0.5) rotate(-10deg); }
-    to { opacity: 1; transform: scale(1) rotate(0deg); }
   }
   .result-type-code {
     font-size: 52px; font-weight: 900; letter-spacing: -2px;
@@ -261,21 +226,18 @@
     background: linear-gradient(135deg, var(--accent), #6b4a2e);
     -webkit-background-clip: text; -webkit-text-fill-color: transparent;
     background-clip: text;
-    animation: fadeSlideUp 0.6s ease-out 0.3s both;
   }
   .result-type-name {
     font-size: 24px; font-weight: 700; color: var(--text); margin-bottom: 16px;
-    animation: fadeSlideUp 0.6s ease-out 0.4s both;
   }
   .result-match {
     display: inline-block; padding: 6px 20px; border-radius: 20px;
     background: var(--accent-glow); color: var(--accent); font-weight: 700;
     font-size: 14px; margin-bottom: 24px;
-    animation: fadeSlideUp 0.6s ease-out 0.45s both;
   }
   .result-desc {
     font-size: 15px; line-height: 1.8; color: var(--text-muted);
-    margin-bottom: 32px; animation: fadeSlideUp 0.6s ease-out 0.5s both;
+    margin-bottom: 32px;
   }
 
   /* 维度可视化 */
@@ -283,7 +245,6 @@
     background: var(--card); border: 1px solid var(--card-border);
     border-radius: var(--radius); padding: 24px; text-align: left;
     margin-bottom: 24px; box-shadow: var(--shadow);
-    animation: fadeSlideUp 0.6s ease-out 0.55s both;
   }
   .dimensions-card h3 {
     font-size: 15px; font-weight: 700; margin-bottom: 16px; color: var(--text);
@@ -303,7 +264,6 @@
   }
   .dim-bar-fill {
     height: 100%; border-radius: 4px;
-    transition: width 1s cubic-bezier(0.2, 0.8, 0.2, 1);
   }
   .dim-bar-fill.L { background: #8ab34e; width: 33.3%; }
   .dim-bar-fill.M { background: #c8956a; width: 66.6%; }
@@ -361,7 +321,6 @@
 <div class="bg-decor">
   <div class="blob blob-1"></div>
   <div class="blob blob-2"></div>
-  <div class="blob blob-3"></div>
 </div>
 <div class="bg-grid"></div>
 
@@ -599,7 +558,7 @@ function renderQuestion() {
           <div class="progress-bar-fill" style="width: ${progress}%"></div>
         </div>
       </div>
-      <div class="question-card entering" id="qCard">
+      <div class="question-card" id="qCard">
         <div class="question-number">第 ${currentQuestion + 1} 题</div>
         <div class="question-text">${q.text}</div>
         <div class="options-list">
@@ -631,27 +590,19 @@ function selectOption(index) {
     btn.style.pointerEvents = 'none';
   });
 
-  // 延迟切换到下一题
+  // 直接切换到下一题
   setTimeout(() => {
-    const card = document.getElementById('qCard');
-    if (card) {
-      card.classList.remove('entering');
-      card.classList.add('exiting');
+    currentQuestion++;
+
+    // 检查是否完成30题
+    if (currentQuestion >= 30) {
+      // 进入补充题判断
+      renderGateQuestion();
+    } else {
+      renderQuestion();
     }
-
-    setTimeout(() => {
-      currentQuestion++;
-
-      // 检查是否完成30题
-      if (currentQuestion >= 30) {
-        // 进入补充题判断
-        renderGateQuestion();
-      } else {
-        renderQuestion();
-      }
-      isAnimating = false;
-    }, 300);
-  }, 400);
+    isAnimating = false;
+  }, 200);
 }
 
 // 渲染补充触发题
@@ -669,7 +620,7 @@ function renderGateQuestion() {
           <div class="progress-bar-fill" style="width: 100%"></div>
         </div>
       </div>
-      <div class="question-card entering" id="qCard">
+      <div class="question-card" id="qCard">
         <div class="question-number">隐藏题目</div>
         <div class="question-text">${drinkGateQ.text}</div>
         <div class="options-list">
@@ -697,24 +648,16 @@ function selectGateOption(index) {
   });
 
   setTimeout(() => {
-    const card = document.getElementById('qCard');
-    if (card) {
-      card.classList.remove('entering');
-      card.classList.add('exiting');
+    // 选项C（index=2）是"疯狂投简历面试"，触发下一题
+    if (index === 2) {
+      gateTriggered = true;
+      renderFollowQuestion();
+    } else {
+      // 直接计算结果
+      calculateAndShowResult();
     }
-
-    setTimeout(() => {
-      // 选项C（index=2）是"疯狂投简历面试"，触发下一题
-      if (index === 2) {
-        gateTriggered = true;
-        renderFollowQuestion();
-      } else {
-        // 直接计算结果
-        calculateAndShowResult();
-      }
-      isAnimating = false;
-    }, 300);
-  }, 400);
+    isAnimating = false;
+  }, 200);
 }
 
 // 渲染追加题
@@ -732,7 +675,7 @@ function renderFollowQuestion() {
           <div class="progress-bar-fill" style="width: 100%"></div>
         </div>
       </div>
-      <div class="question-card entering" id="qCard">
+      <div class="question-card" id="qCard">
         <div class="question-number">隐藏触发题</div>
         <div class="question-text">${drinkFollowQ.text}</div>
         <div class="options-list">
@@ -766,7 +709,7 @@ function selectFollowOption(index) {
     }
     calculateAndShowResult();
     isAnimating = false;
-  }, 500);
+  }, 200);
 }
 
 // ========== 计算逻辑 ==========
@@ -861,7 +804,7 @@ function renderResult() {
                 <div class="dim-row">
                   <span class="dim-label" title="${desc}">${name.split(' ')[1]}</span>
                   <div class="dim-bar-track">
-                    <div class="dim-bar-fill ${lv}" style="width: 0%" data-target="${lv === 'L' ? '33.3' : lv === 'M' ? '66.6' : '100'}"></div>
+                    <div class="dim-bar-fill ${lv}" style="width: ${lv === 'L' ? '33.3' : lv === 'M' ? '66.6' : '100'}%"></div>
                   </div>
                   <span class="dim-level ${lv}" title="${desc}">${lv}</span>
                 </div>
@@ -878,14 +821,6 @@ function renderResult() {
       </div>
     </div>
   `;
-
-  // 延迟触发维度条动画
-  setTimeout(() => {
-    document.querySelectorAll('.dim-bar-fill').forEach(bar => {
-      const target = bar.getAttribute('data-target');
-      bar.style.width = target + '%';
-    });
-  }, 200);
 }
 
 // Toast 提示

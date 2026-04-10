@@ -144,12 +144,10 @@
     button {
       border: 0;
       cursor: pointer;
-      transition: transform .16s ease, box-shadow .16s ease, opacity .16s ease;
       font: inherit;
     }
 
-    button:hover { transform: translateY(-1px); }
-    button:disabled { cursor: not-allowed; opacity: 0.55; transform: none; }
+    button:disabled { cursor: not-allowed; opacity: 0.55; }
 
     .btn-primary {
       background: var(--accent-strong);
@@ -203,7 +201,6 @@
       height: 100%;
       background: linear-gradient(90deg, #97b59c, #5b7a62);
       border-radius: inherit;
-      transition: width .22s ease;
     }
 
     .progress-text {
@@ -259,13 +256,7 @@
       border-radius: 14px;
       border: 1px solid var(--line);
       background: #fff;
-      transition: border-color .16s ease, background .16s ease, transform .16s ease;
       cursor: pointer;
-    }
-
-    .option:hover {
-      border-color: #bcd0c1;
-      background: #f8fcf9;
     }
 
     .option input {
@@ -297,20 +288,6 @@
       line-height: 1.7;
     }
 
-    .question-card.entering {
-      animation: cardEnter 0.45s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
-    }
-    .question-card.exiting {
-      animation: cardExit 0.3s cubic-bezier(0.4, 0, 1, 1) forwards;
-    }
-    @keyframes cardEnter {
-      from { opacity: 0; transform: translateY(30px) scale(0.97); }
-      to { opacity: 1; transform: translateY(0) scale(1); }
-    }
-    @keyframes cardExit {
-      from { opacity: 1; transform: translateY(0) scale(1); }
-      to { opacity: 0; transform: translateY(-20px) scale(0.97); }
-    }
 
     .type-box,
     .score-box,
@@ -1475,7 +1452,7 @@
       questionContainer.innerHTML = '';
 
       const card = document.createElement('article');
-      card.className = 'question question-card entering';
+      card.className = 'question question-card';
       card.id = 'qCard';
       card.innerHTML = `
         <div class="question-meta">
@@ -1514,28 +1491,20 @@
           app.isAnimating = true;
 
           setTimeout(() => {
-            const cardEl = document.getElementById('qCard');
-            if (cardEl) {
-              cardEl.classList.remove('entering');
-              cardEl.classList.add('exiting');
+            if (q.id === 'drink_gate_q1') {
+              app.visibleQuestions = getVisibleQuestions();
             }
 
-            setTimeout(() => {
-              if (q.id === 'drink_gate_q1') {
-                app.visibleQuestions = getVisibleQuestions();
-              }
+            app.currentQuestionIndex++;
 
-              app.currentQuestionIndex++;
-
-              if (app.currentQuestionIndex >= app.visibleQuestions.length) {
-                renderResult();
-              } else {
-                renderCurrentQuestion();
-                updateProgress();
-              }
-              app.isAnimating = false;
-            }, 300);
-          }, 400);
+            if (app.currentQuestionIndex >= app.visibleQuestions.length) {
+              renderResult();
+            } else {
+              renderCurrentQuestion();
+              updateProgress();
+            }
+            app.isAnimating = false;
+          }, 200);
         });
       });
 
