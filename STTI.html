@@ -1,0 +1,1305 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>STTI 股票投资人格测试</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700;900&family=ZCOOL+QingKe+HuangYou&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+  :root {
+    --bg: #0f0a0a;
+    --bg2: #1a1111;
+    --card: #1e1414;
+    --card-border: #3f2a2a;
+    --fg: #f0e8e8;
+    --fg-muted: #9f8a8a;
+    --accent: #ff5252;
+    --accent2: #ff8a80;
+    --accent-dim: #4a1010;
+    --danger: #00e676;
+    --danger-dim: #1b5e20;
+    --gold: #ffd740;
+    --radius: 16px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Noto Sans SC', sans-serif;
+    background: var(--bg);
+    color: var(--fg);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* 背景装饰 */
+  .bg-decor {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    overflow: hidden;
+  }
+  .bg-decor .orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(100px);
+    opacity: 0.15;
+    animation: orbFloat 20s ease-in-out infinite alternate;
+  }
+  .bg-decor .orb1 {
+    width: 500px; height: 500px;
+    background: var(--accent);
+    top: -150px; left: -100px;
+  }
+  .bg-decor .orb2 {
+    width: 400px; height: 400px;
+    background: var(--accent2);
+    bottom: -100px; right: -80px;
+    animation-delay: -10s;
+  }
+  .bg-decor .orb3 {
+    width: 300px; height: 300px;
+    background: var(--gold);
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    opacity: 0.06;
+    animation-delay: -5s;
+  }
+
+  /* 网格背景 */
+  .bg-grid {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    background-image:
+      linear-gradient(rgba(255,82,82,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,82,82,0.03) 1px, transparent 1px);
+    background-size: 60px 60px;
+  }
+
+  /* 主容器 */
+  .app {
+    position: relative;
+    z-index: 1;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 24px 16px;
+  }
+
+  /* 页面通用 */
+  .page {
+    width: 100%;
+    max-width: 640px;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+  }
+  .page.active {
+    display: flex;
+  }
+
+  /* ========== 开始页 ========== */
+  .start-page {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+  }
+  .start-page .logo-icon {
+    width: 120px; height: 120px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent-dim), #3d1010);
+    border: 3px solid var(--accent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 52px;
+    color: var(--accent);
+    margin-bottom: 32px;
+    box-shadow: 0 0 50px rgba(255,82,82,0.2);
+    animation: pulse 3s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { box-shadow: 0 0 50px rgba(255,82,82,0.2); }
+    50% { box-shadow: 0 0 80px rgba(255,82,82,0.4); }
+  }
+  .start-page .subtitle {
+    color: var(--fg);
+    font-size: 20px;
+    margin-bottom: 12px;
+    text-align: center;
+    line-height: 1.6;
+    font-weight: 500;
+  }
+  .start-page .subtitle small {
+    display: block;
+    font-size: 14px;
+    color: var(--fg-muted);
+    margin-top: 8px;
+    font-weight: normal;
+  }
+  .start-page .features {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    width: 100%;
+    margin: 32px 0 48px 0;
+  }
+  .start-page .feat-card {
+    background: var(--card);
+    border: 1px solid var(--card-border);
+    border-radius: 16px;
+    padding: 24px 16px;
+    text-align: center;
+  }
+  .feat-card i {
+    font-size: 28px;
+    color: var(--accent);
+    margin-bottom: 12px;
+    display: block;
+  }
+  .feat-card span {
+    font-size: 14px;
+    color: var(--fg-muted);
+    line-height: 1.5;
+    display: block;
+  }
+
+  /* 按钮 */
+  .btn-primary {
+    background: linear-gradient(135deg, var(--accent-dim), #3d1010);
+    border: 2px solid var(--accent);
+    color: var(--accent);
+    font-family: 'ZCOOL QingKe HuangYou', sans-serif;
+    font-size: 20px;
+    letter-spacing: 3px;
+    padding: 16px 56px;
+    border-radius: 60px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+  }
+  .btn-primary:hover {
+    background: var(--accent);
+    color: var(--bg);
+    box-shadow: 0 0 30px rgba(255,82,82,0.3);
+    transform: translateY(-2px);
+  }
+  .btn-primary:active { transform: translateY(0); }
+
+  /* ========== 答题页 ========== */
+  .quiz-container {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  /* 进度区域 */
+  .progress-area {
+    width: 100%;
+    margin-bottom: 32px;
+  }
+  .progress-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+  .progress-top .q-count {
+    font-size: 14px;
+    color: var(--fg-muted);
+  }
+  .progress-top .q-count b {
+    color: var(--accent);
+    font-size: 18px;
+  }
+  .progress-top .dim-label {
+    font-size: 12px;
+    color: #000;
+    background: rgba(255,255,255,0.9);
+    padding: 4px 8px;
+    min-width: 68px;
+    text-align: center;
+    border-radius: 20px;
+    border: 1px solid rgba(0,0,0,0.1);
+  }
+  .progress-bar-bg {
+    width: 100%;
+    height: 6px;
+    background: var(--card);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+  .progress-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    border-radius: 3px;
+    transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 0 10px rgba(0,230,118,0.4);
+  }
+
+  /* 题目卡片 */
+  .question-card {
+    width: 100%;
+    background: var(--card);
+    border: 1px solid var(--card-border);
+    border-radius: var(--radius);
+    padding: 32px 28px;
+    transition: opacity 0.35s ease, transform 0.35s ease;
+  }
+  .question-card.fade-out {
+    opacity: 0;
+    transform: translateX(-40px);
+  }
+  .question-card.fade-in {
+    opacity: 0;
+    transform: translateX(40px);
+  }
+  .question-card .q-text {
+    font-size: 18px;
+    font-weight: 500;
+    line-height: 1.7;
+    margin-bottom: 28px;
+    min-height: 60px;
+  }
+
+  /* 选项 */
+  .options { display: flex; flex-direction: column; gap: 12px; }
+  .option-btn {
+    width: 100%;
+    text-align: left;
+    background: rgba(0,230,118,0.04);
+    border: 1px solid var(--card-border);
+    border-radius: 12px;
+    padding: 16px 20px;
+    color: var(--fg);
+    font-size: 15px;
+    line-height: 1.6;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+  }
+  .option-btn .opt-letter {
+    flex-shrink: 0;
+    width: 28px; height: 28px;
+    border-radius: 8px;
+    background: rgba(0,230,118,0.08);
+    border: 1px solid rgba(0,230,118,0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 13px;
+    color: var(--accent);
+    transition: all 0.25s ease;
+  }
+  .option-btn:hover {
+    border-color: var(--accent);
+    background: rgba(0,230,118,0.08);
+    transform: translateX(4px);
+  }
+  .option-btn:hover .opt-letter {
+    background: var(--accent);
+    color: var(--bg);
+  }
+  .option-btn.selected {
+    border-color: var(--accent);
+    background: rgba(0,230,118,0.12);
+  }
+  .option-btn.selected .opt-letter {
+    background: var(--accent);
+    color: var(--bg);
+  }
+
+  /* ========== 结果页 ========== */
+  .result-container {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 24px;
+  }
+
+  .result-header {
+    text-align: center;
+    margin-bottom: 8px;
+  }
+  .result-header .tag {
+    display: inline-block;
+    font-size: 12px;
+    color: var(--accent);
+    background: rgba(0,230,118,0.08);
+    border: 1px solid rgba(0,230,118,0.2);
+    padding: 4px 16px;
+    border-radius: 20px;
+    margin-bottom: 16px;
+    letter-spacing: 2px;
+  }
+  .result-header .type-code {
+    font-family: 'ZCOOL QingKe HuangYou', sans-serif;
+    font-size: 56px;
+    letter-spacing: 4px;
+    background: linear-gradient(90deg, #ff5252, #ff8a80, #ff5252);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 8px;
+  }
+  .result-header .type-name {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--fg);
+    margin-bottom: 4px;
+  }
+  .result-header .match-pct {
+    font-size: 14px;
+    color: var(--fg-muted);
+  }
+  .result-header .match-pct b {
+    color: var(--accent);
+    font-size: 20px;
+  }
+
+  /* 维度图 */
+  .dim-radar {
+    width: 100%;
+    background: var(--card);
+    border: 1px solid var(--card-border);
+    border-radius: var(--radius);
+    padding: 24px;
+  }
+  .dim-radar h3 {
+    font-size: 14px;
+    color: var(--fg-muted);
+    margin-bottom: 18px;
+    letter-spacing: 1px;
+  }
+  .dim-bars { display: flex; flex-direction: column; gap: 10px; }
+  .dim-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .dim-label {
+    width: 70px;
+    font-size: 12px;
+    color: var(--fg-muted);
+    text-align: right;
+    flex-shrink: 0;
+  }
+  .dim-bar-bg {
+    flex: 1;
+    height: 8px;
+    background: rgba(0,230,118,0.08);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .dim-bar-fill {
+    height: 100%;
+    border-radius: 4px;
+    transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .dim-bar-fill.L { background: var(--danger); }
+  .dim-bar-fill.M { background: var(--gold); }
+  .dim-bar-fill.H { background: var(--accent); }
+  .dim-level {
+    width: 24px;
+    font-size: 12px;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+  .dim-level.L { color: var(--danger); }
+  .dim-level.M { color: var(--gold); }
+  .dim-level.H { color: var(--accent); }
+
+  /* 特点描述 */
+  .desc-card {
+    width: 100%;
+    background: var(--card);
+    border: 1px solid var(--card-border);
+    border-radius: var(--radius);
+    padding: 24px 28px;
+  }
+  .desc-card h3 {
+    font-size: 14px;
+    color: var(--fg-muted);
+    margin-bottom: 14px;
+    letter-spacing: 1px;
+  }
+  .desc-card p {
+    font-size: 15px;
+    line-height: 1.8;
+    color: var(--fg);
+  }
+  .desc-card .traits {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 16px;
+  }
+  .desc-card .trait-tag {
+    font-size: 12px;
+    padding: 4px 14px;
+    border-radius: 20px;
+    border: 1px solid var(--card-border);
+    color: var(--fg-muted);
+    background: rgba(0,230,118,0.04);
+  }
+
+  /* 维度分组 */
+  .dim-group-title {
+    font-size: 11px;
+    color: var(--accent-dim);
+    letter-spacing: 2px;
+    padding: 8px 0 4px 0;
+    border-bottom: 1px solid rgba(0,230,118,0.06);
+    margin-top: 6px;
+  }
+
+  .btn-secondary {
+    background: transparent;
+    border: 2px solid var(--card-border);
+    color: var(--fg-muted);
+    font-family: 'ZCOOL QingKe HuangYou', sans-serif;
+    font-size: 16px;
+    letter-spacing: 2px;
+    padding: 14px 44px;
+    border-radius: 60px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: 12px;
+  }
+  .btn-secondary:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+    background: rgba(0,230,118,0.04);
+  }
+
+  /* 动画 */
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .animate-in {
+    animation: fadeInUp 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  }
+  .delay-1 { animation-delay: 0.1s; opacity: 0; }
+  .delay-2 { animation-delay: 0.2s; opacity: 0; }
+  .delay-3 { animation-delay: 0.3s; opacity: 0; }
+  .delay-4 { animation-delay: 0.4s; opacity: 0; }
+
+  /* Toast 提示 */
+  .toast {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%) translateY(-100px);
+    background: var(--card);
+    border: 1px solid var(--accent);
+    color: var(--accent);
+    padding: 12px 28px;
+    border-radius: 12px;
+    font-size: 14px;
+    z-index: 100;
+    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 8px 30px rgba(0,0,0,0.4);
+  }
+  .toast.show {
+    transform: translateX(-50%) translateY(0);
+  }
+
+  /* 响应式 */
+  @media (max-width: 480px) {
+    .start-page .subtitle { font-size: 18px; }
+    .start-page .features { grid-template-columns: 1fr; gap: 8px; }
+    .feat-card { padding: 14px 10px; }
+    .question-card { padding: 24px 20px; }
+    .question-card .q-text { font-size: 16px; }
+    .result-header .type-code { font-size: 40px; }
+    .dim-label { width: 56px; font-size: 11px; }
+  }
+
+  /* 减少动画偏好 */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+
+  /* K线装饰动画 */
+  .kline-decor {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 120px;
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.04;
+  }
+</style>
+</head>
+<body>
+
+<div class="bg-decor">
+  <div class="orb orb1"></div>
+  <div class="orb orb2"></div>
+  <div class="orb orb3"></div>
+</div>
+<div class="bg-grid"></div>
+
+<!-- K线装饰 canvas -->
+<canvas class="kline-decor" id="klineCanvas"></canvas>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<div class="app">
+
+  <!-- ===== 开始页 ===== -->
+  <div class="page active" id="startPage">
+    <div class="start-page">
+      <div class="logo-icon">
+        <i class="fas fa-chart-line"></i>
+      </div>
+      <p class="subtitle">
+        STTI股票投资人格测试
+        <small>30道题，测出你在股市中的真实人格</small>
+      </p>
+      <div class="features">
+        <div class="feat-card">
+          <i class="fas fa-layer-group"></i>
+          <span>15个维度</span>
+        </div>
+        <div class="feat-card">
+          <i class="fas fa-fingerprint"></i>
+          <span>28种股民人格</span>
+        </div>
+        <div class="feat-card">
+          <i class="fas fa-dice"></i>
+          <span>隐藏彩蛋<br>等你触发</span>
+        </div>
+      </div>
+      <button class="btn-primary" onclick="startQuiz()" aria-label="开始测试">
+        开始测试
+      </button>
+    </div>
+  </div>
+
+  <!-- ===== 答题页 ===== -->
+  <div class="page" id="quizPage">
+    <div class="quiz-container">
+      <div class="progress-area">
+        <div class="progress-top">
+          <span class="q-count">第 <b id="qCurrent">1</b> / <b id="qTotal">30</b> 题</span>
+          <span class="dim-label" id="dimLabel">风险承受力</span>
+        </div>
+        <div class="progress-bar-bg">
+          <div class="progress-bar-fill" id="progressFill" style="width:0%"></div>
+        </div>
+      </div>
+      <div class="question-card" id="questionCard">
+        <div class="q-text" id="qText">题目文字</div>
+        <div class="options" id="optionsContainer"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== 结果页 ===== -->
+  <div class="page" id="resultPage">
+    <div class="result-container">
+      <div class="result-header animate-in delay-1">
+        <div class="tag">你的股民人格</div>
+        <div class="type-code" id="resCode">GOD</div>
+        <div class="type-name" id="resName">股神</div>
+        <div class="match-pct">匹配度 <b id="resMatch">95</b>%</div>
+      </div>
+
+      <div class="dim-radar animate-in delay-2">
+        <h3><i class="fas fa-chart-bar" style="margin-right:6px;"></i>维度分析</h3>
+        <div class="dim-bars" id="dimBars"></div>
+      </div>
+
+      <div class="desc-card animate-in delay-3">
+        <h3><i class="fas fa-scroll" style="margin-right:6px;"></i>人格解读</h3>
+        <p id="resDesc">描述文字</p>
+        <div class="traits" id="resTraits"></div>
+      </div>
+
+      <button class="btn-secondary animate-in delay-4" onclick="restartQuiz()">
+        <i class="fas fa-redo" style="margin-right:8px;"></i>重新测试
+      </button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ===== 题目数据 =====
+const DIMENSIONS = [
+  { key: 'R1', name: '风险承受力', group: '风险模型' },
+  { key: 'R2', name: '波动容忍度', group: '风险模型' },
+  { key: 'R3', name: '止损果断度', group: '风险模型' },
+  { key: 'L1', name: '基本面信仰', group: '逻辑模型' },
+  { key: 'L2', name: '技术面依赖', group: '逻辑模型' },
+  { key: 'L3', name: '消息面敏感', group: '逻辑模型' },
+  { key: 'E1', name: '贪婪指数',   group: '情绪模型' },
+  { key: 'E2', name: '恐慌指数',   group: '情绪模型' },
+  { key: 'E3', name: '错失恐惧',   group: '情绪模型' },
+  { key: 'Ac1', name: '交易频率',  group: '行动模型' },
+  { key: 'Ac2', name: '决策风格',  group: '行动模型' },
+  { key: 'Ac3', name: '持仓定力',  group: '行动模型' },
+  { key: 'C1', name: '市场观倾向', group: '认知模型' },
+  { key: 'C2', name: '独立思考度', group: '认知模型' },
+  { key: 'C3', name: '归因模式',   group: '认知模型' },
+];
+
+// 每维度2题，共30题 + 1补充题
+const QUESTIONS = [
+  // R1 风险承受力
+  { dim: 'R1', text: '你买入一只股票后，最大的亏损幅度到多少你会开始睡不着觉？', opts: [
+    { letter: 'A', text: '亏5%就觉得天塌了', score: 1 },
+    { letter: 'B', text: '亏20%还能勉强接受', score: 2 },
+    { letter: 'C', text: '腰斩（-50%）只要逻辑没变我照样睡得香', score: 3 },
+  ]},
+  { dim: 'R1', text: '你的账户如果一整个月都在阴跌，你的日常状态是？', opts: [
+    { letter: 'A', text: '频繁打开软件，焦虑得吃不下饭', score: 1 },
+    { letter: 'B', text: '有点郁闷，但还能正常生活工作', score: 2 },
+    { letter: 'C', text: '该干嘛干嘛，甚至越跌越开心能补仓', score: 3 },
+  ]},
+  // R2 波动容忍度
+  { dim: 'R2', text: '持仓股当天先跌5%再涨5%，最终收平，你的心跳是？', opts: [
+    { letter: 'A', text: '坐过山车，心脏病都要犯了', score: 1 },
+    { letter: 'B', text: '有点刺激，但还在承受范围内', score: 2 },
+    { letter: 'C', text: '毫无波澜，甚至觉得主力在洗盘', score: 3 },
+  ]},
+  { dim: 'R2', text: '大盘突然因为小道消息暴跌3%，你的第一反应是？', opts: [
+    { letter: 'A', text: '赶紧清仓跑路，保命要紧', score: 1 },
+    { letter: 'B', text: '减点仓位，观察一下再说', score: 2 },
+    { letter: 'C', text: '毫不在意，甚至想看看有没有错杀的好货', score: 3 },
+  ]},
+  // R3 止损果断度
+  { dim: 'R3', text: '买入后发现自己逻辑看错了，但目前还亏得不多，你会？', opts: [
+    { letter: 'A', text: '立马割肉，认错出局', score: 1 },
+    { letter: 'B', text: '犹豫一下，等反弹一点再走', score: 2 },
+    { letter: 'C', text: '死扛到底，不回本绝对不卖', score: 3 },
+  ]},
+  { dim: 'R3', text: '股价跌破了你的关键止损位（比如20日线），你会？', opts: [
+    { letter: 'A', text: '机器般无情按掉止损', score: 1 },
+    { letter: 'B', text: '心理斗争半天，最终含泪割掉', score: 2 },
+    { letter: 'C', text: '装死不看，假装自己是个价值投资者', score: 3 },
+  ]},
+  // L1 基本面信仰
+  { dim: 'L1', text: '买股票前，你最看重什么？', opts: [
+    { letter: 'A', text: '公司的护城河、财报和估值', score: 1 },
+    { letter: 'B', text: '行业赛道和未来的想象空间', score: 2 },
+    { letter: 'C', text: '谁管基本面，看图炒股就行了', score: 3 },
+  ]},
+  { dim: 'L1', text: '面对一家年年亏损的公司，你的态度是？', opts: [
+    { letter: 'A', text: '一票否决，绝不碰垃圾股', score: 1 },
+    { letter: 'B', text: '如果有反转预期，可以小仓位赌一把', score: 2 },
+    { letter: 'C', text: '亏损算什么？只要能涨就是好票', score: 3 },
+  ]},
+  // L2 技术面依赖
+  { dim: 'L2', text: '你怎么看待K线图和均线？', opts: [
+    { letter: 'A', text: '都是过去的数据，具有滞后性，不太看', score: 1 },
+    { letter: 'B', text: '会作为买卖时点的参考，辅助决策', score: 2 },
+    { letter: 'C', text: '奉为圭臬，金叉买死叉卖，量价配合绝不含糊', score: 3 },
+  ]},
+  { dim: 'L2', text: '面对突破前高的走势，你的判断是？', opts: [
+    { letter: 'A', text: '小心诱多，可能是主力出货', score: 1 },
+    { letter: 'B', text: '结合量能看，放量突破才跟', score: 2 },
+    { letter: 'C', text: '突破就是真突破，闭眼追涨', score: 3 },
+  ]},
+  // L3 消息面敏感
+  { dim: 'L3', text: '突然出台一个行业利好政策，你的操作是？', opts: [
+    { letter: 'A', text: '观望，利好出尽是利空', score: 1 },
+    { letter: 'B', text: '找行业龙头轻仓试一下', score: 2 },
+    { letter: 'C', text: '满仓杀入，绝不能错过这波红利', score: 3 },
+  ]},
+  { dim: 'L3', text: '听说某大V/大佬推荐了一只股票，你会？', opts: [
+    { letter: 'A', text: '当耳旁风，听个乐呵', score: 1 },
+    { letter: 'B', text: '去查查基本面，符合标准再考虑', score: 2 },
+    { letter: 'C', text: '赶紧跟着买，手慢无！', score: 3 },
+  ]},
+  // E1 贪婪指数
+  { dim: 'E1', text: '你买的股票连续涨停3天，你会？', opts: [
+    { letter: 'A', text: '赶紧落袋为安，保住利润', score: 1 },
+    { letter: 'B', text: '减仓一半，剩下的让利润奔跑', score: 2 },
+    { letter: 'C', text: '这就是我的股神时刻，加仓干！做个波段再走', score: 3 },
+  ]},
+  { dim: 'E1', text: '卖出后股票又涨了20%，你的内心是？', opts: [
+    { letter: 'A', text: '赚到认知范围内的钱就行，不眼红', score: 1 },
+    { letter: 'B', text: '有点拍大腿，但还能忍', score: 2 },
+    { letter: 'C', text: '气得拍桌子，觉得自己少赚了一个亿，下次一定要拿到最后', score: 3 },
+  ]},
+  // E2 恐慌指数
+  { dim: 'E2', text: '持仓股遭遇黑天鹅，开盘直接跌停，你会？', opts: [
+    { letter: 'A', text: '跌停板排队挂单，能跑多少跑多少', score: 1 },
+    { letter: 'B', text: '认命，等开板再决定', score: 2 },
+    { letter: 'C', text: '逆市加仓，别人恐惧我贪婪', score: 3 },
+  ]},
+  { dim: 'E2', text: '账户总资产连续3个月缩水，你的状态是？', opts: [
+    { letter: 'A', text: '割肉清仓，退出股市保平安', score: 1 },
+    { letter: 'B', text: '卸载软件，装死不看', score: 2 },
+    { letter: 'C', text: '顶着压力继续定投/补仓，寻找翻盘点', score: 3 },
+  ]},
+  // E3 错失恐惧
+  { dim: 'E3', text: '同事买的股票一个月翻倍了，天天在你面前吹，你会？', opts: [
+    { letter: 'A', text: '羡慕但不跟风，知道自己没那运气', score: 1 },
+    { letter: 'B', text: '偷偷看他买了啥，研究一下', score: 2 },
+    { letter: 'C', text: '立马问代码，明天开盘就买进去', score: 3 },
+  ]},
+  { dim: 'E3', text: '看到大盘全线大涨，自己空仓，你会？', opts: [
+    { letter: 'A', text: '空仓就是赚，踏空不亏钱', score: 1 },
+    { letter: 'B', text: '买点宽基ETF，感受一下温度', score: 2 },
+    { letter: 'C', text: '闭眼随便选一个热门板块冲进去，一天都不能少赚', score: 3 },
+  ]},
+  // Ac1 交易频率
+  { dim: 'Ac1', text: '你平时持股的时间大约是？', opts: [
+    { letter: 'A', text: '几天甚至当天（做T/打板）', score: 1 },
+    { letter: 'B', text: '几周到几个月（波段操作）', score: 2 },
+    { letter: 'C', text: '几年到长期持有（价值投资）', score: 3 },
+  ]},
+  { dim: 'Ac1', text: '你一年下来的换手率大概是？', opts: [
+    { letter: 'A', text: '极高，天天都在买卖', score: 1 },
+    { letter: 'B', text: '适中，看准了才动手', score: 2 },
+    { letter: 'C', text: '极低，买入后基本不动', score: 3 },
+  ]},
+  // Ac2 决策风格
+  { dim: 'Ac2', text: '决定买入一只股票需要多久？', opts: [
+    { letter: 'A', text: '几秒钟，看对眼了就买', score: 1 },
+    { letter: 'B', text: '几个小时，稍微研究一下K线和公告', score: 2 },
+    { letter: 'C', text: '几周甚至几个月，深度研报、财报分析全套做完', score: 3 },
+  ]},
+  { dim: 'Ac2', text: '挂单交易时，你的习惯是？', opts: [
+    { letter: 'A', text: '直接市价委托，马上成交才爽', score: 1 },
+    { letter: 'B', text: '挂个心理价位，到了就买，不到就不买', score: 2 },
+    { letter: 'C', text: '犹豫不决，经常在下单前一刻放弃', score: 3 },
+  ]},
+  // Ac3 持仓定力
+  { dim: 'Ac3', text: '买入后三个月，股票没涨也没跌，一直在震荡，你会？', opts: [
+    { letter: 'A', text: '实在受不了，换股去追热点', score: 1 },
+    { letter: 'B', text: '设置一个期限，比如半年，不涨再走', score: 2 },
+    { letter: 'C', text: '只要逻辑没坏，横有多长竖有多高，继续死等', score: 3 },
+  ]},
+  { dim: 'Ac3', text: '刚卖掉一只套了很久的股票，它马上就大涨了，你会？', opts: [
+    { letter: 'A', text: '气急败坏地再追高买回来', score: 1 },
+    { letter: 'B', text: '拍大腿叹息，但绝不买回', score: 2 },
+    { letter: 'C', text: '深刻反思卖出逻辑，当作一次经验教训', score: 3 },
+  ]},
+  // C1 市场观倾向
+  { dim: 'C1', text: '你觉得股市本质上是什么？', opts: [
+    { letter: 'A', text: '零和博弈的赌场，赚的是别人亏的钱', score: 1 },
+    { letter: 'B', text: '资源配置的市场，好公司会创造价值', score: 2 },
+    { letter: 'C', text: '庄家收割散户的提款机', score: 3 },
+  ]},
+  { dim: 'C1', text: '对于"长期来看股市是向上的"这句话，你怎么看？', opts: [
+    { letter: 'A', text: '扯淡，永远是牛短熊长', score: 1 },
+    { letter: 'B', text: '大致认同，但得看好行业', score: 2 },
+    { letter: 'C', text: '坚信不疑，指数定投永不为输', score: 3 },
+  ]},
+  // C2 独立思考度
+  { dim: 'C2', text: '你的交易体系主要来自哪里？', opts: [
+    { letter: 'A', text: '自己真金白银试错总结出来的', score: 1 },
+    { letter: 'B', text: '融合了几位大V和大师的理念', score: 2 },
+    { letter: 'C', text: '全靠抄作业，没有体系', score: 3 },
+  ]},
+  { dim: 'C2', text: '当全市场都在看空，但你的逻辑显示没问题，你会？', opts: [
+    { letter: 'A', text: '坚持自己，逆向加仓', score: 1 },
+    { letter: 'B', text: '降低仓位，防守一下', score: 2 },
+    { letter: 'C', text: '立刻怀疑自己，跟着大众跑路', score: 3 },
+  ]},
+  // C3 归因模式
+  { dim: 'C3', text: '赚到钱的时候，你觉得主要是因为？', opts: [
+    { letter: 'A', text: '自己的认知到位，纪律严明', score: 1 },
+    { letter: 'B', text: '大盘环境好，跟着喝了口汤', score: 2 },
+    { letter: 'C', text: '运气好，菩萨保佑', score: 3 },
+  ]},
+  { dim: 'C3', text: '亏钱的时候，你通常怪谁？', opts: [
+    { letter: 'A', text: '怪自己，复盘找自己的错误', score: 1 },
+    { letter: 'B', text: '怪市场，大环境太差谁也赚不到', score: 2 },
+    { letter: 'C', text: '怪主力/庄家/证监会，总有刁民想害朕', score: 3 },
+  ]},
+];
+
+// 补充题（第31题，借贷触发）
+const BONUS_Q1 = {
+  text: '如果行情来了，您愿意用什么方式加仓？',
+  opts: [
+    { letter: 'A', text: '用闲置资金加仓', next: null },
+    { letter: 'B', text: '动用存款，不留备用金', next: null },
+    { letter: 'C', text: '借钱/网贷/上杠杆', next: 'bonus2' },
+    { letter: 'D', text: '绝不加仓，只守底仓', next: null },
+  ]
+};
+const BONUS_Q2 = {
+  text: '您对配资/杠杆的态度是？',
+  opts: [
+    { letter: 'A', text: '偶尔用用，提高资金利用率', next: null },
+    { letter: 'B', text: '杠杆拉满，赢会所嫩模', next: 'drunk' },
+  ]
+};
+
+// ===== 人格类型库 =====
+const PERSONALITIES = [
+  { code: 'GOD',  name: '股神',   pattern: 'HHHHHLHMLLHHHHL', desc: '知行合一，稳定复利，万中无一的顶级玩家。你拥有极强的纪律性和独立思考能力，在贪婪与恐惧之间游刃有余。', traits: ['知行合一','稳定复利','纪律严明','独立思考'] },
+  { code: 'DIAM', name: '钻石手', pattern: 'HHHLHLMHHLMHHLM', desc: '拿住就是干，死扛到底，信仰充值。只要逻辑没坏，就算跌到姥姥家也绝不止损。时间是你最好的朋友。', traits: ['死扛到底','信仰充值','长期主义','捂股丰登'] },
+  { code: 'VULT', name: '秃鹫',   pattern: 'HMHLLMMLLMHLMHL', desc: '专捡烟蒂，困境反转玩家。别人避之不及的垃圾股，你偏偏觉得是黄金坑。', traits: ['逆向投资','困境反转','烟蒂策略','独到眼光'] },
+  { code: 'BULL', name: '猛牛',   pattern: 'HHHHHHMHHLMHHLL', desc: '永远看多，做多中国。大盘跌5%你觉得是加仓机会，跌10%你觉得是天赐良机。', traits: ['永远看多','坚定信仰','加仓狂魔','乐观主义'] },
+  { code: 'BEAR', name: '独熊',   pattern: 'LLLLLLMLLMHLLHH', desc: '永远空仓，看谁都像要跌。市场涨了你觉得是诱多，市场跌了你觉得是开始。', traits: ['永远空仓','风险厌恶','怀疑一切','保守极致'] },
+  { code: 'DART', name: '飞镖客', pattern: 'MLMLMHMHLMHLMML', desc: '闭眼选股，全凭玄学。代码好不好听、K线好不好看、今天宜不宜买入，才是你决策的关键。', traits: ['玄学炒股','随心所欲','佛系随缘','蒙对就赚'] },
+  { code: 'DEEP', name: '潜伏者', pattern: 'HMHLLHLHHLMHMLH', desc: '提前埋伏，静待花开。你不喜欢追高，只喜欢在无人问津处悄悄建仓，然后等待风来。', traits: ['提前布局','耐心等待','低调潜伏','左侧交易'] },
+  { code: 'RIDE', name: '趋势狗', pattern: 'MHMHHHMLLHMHLML', desc: '突破追涨，破位止损。你信奉"趋势是你的朋友"，从不抄底，只做右侧。', traits: ['右侧交易','追涨杀跌','顺势而为','纪律止损'] },
+  { code: 'COPI', name: '跟风狗', pattern: 'MLMHLMHHLMLLMLL', desc: '大V买啥我买啥。你缺乏独立判断，但执行力极强——看到别人晒单就手痒。', traits: ['抄作业','跟风买入','缺乏主见','执行力强'] },
+  { code: 'PUMP', name: '打板客', pattern: 'HHMMLLHHMLLLMML', desc: '专做涨停，情绪博弈。你每天9:15就开始紧张，排板、撤单、再排板，不亦乐乎。', traits: ['涨停猎手','情绪博弈','短线王者','快进快出'] },
+  { code: 'WHAL', name: '鲸鱼',   pattern: 'HHHLLMHHLMHHHMH', desc: '大资金定投，不屑做T。你的子弹无限，跌了就买，涨了也买，反正每个月工资到账就加仓。', traits: ['大资金','定投王者','不看盘','心态超稳'] },
+  { code: 'CLOT', name: '韭菜',   pattern: 'LLMHHHMLLMMLLMH', desc: '高买低卖，精准扶贫。你是市场的润滑剂，庄家的提款机，但每次都坚信"这次不一样"。', traits: ['追涨杀跌','精准反向','乐此不疲','这次不同'] },
+  { code: 'TURT', name: '乌龟',   pattern: 'LLLLLLMLLLLLLHH', desc: '极度保守，只买货基。股市和你基本没关系，但你还是忍不住每天看看余额宝收益。', traits: ['极度保守','货基为王','拒绝风险','稳如老狗'] },
+  { code: 'GAMB', name: '赌徒',   pattern: 'HHMMLLHHHHLMLML', desc: '满仓梭哈，胜者为王。什么基本面、技术面，不如一个"感觉来了"。', traits: ['满仓梭哈','全凭感觉','赢者通吃','不设止损'] },
+  { code: 'NERD', name: '研究员', pattern: 'MLHHLMLMLLMHHMH', desc: '财报倒背如流，一买就套。你分析得头头是道，但市场从来不听你的。', traits: ['深度研究','过度分析','理论大师','实战白给'] },
+  { code: 'CHAD', name: '满仓哥', pattern: 'HHMHHLMHHLMLMML', desc: '永远满仓，永远热泪盈眶。空仓比亏钱还难受，钱放着不投资就是最大的浪费。', traits: ['永远满仓','闲不住','热泪盈眶','资金效率'] },
+  { code: 'CASH', name: '空仓佬', pattern: 'LLLMLLMLLMHMLHH', desc: '一顿分析猛如虎，一看仓位零点五。你分析得比谁都多，但就是不敢下手。', traits: ['永远空仓','过度谨慎','分析瘫痪','嘴强王者'] },
+  { code: 'CRYR', name: '嚎叫者', pattern: 'LLMHHHMLLMMLLMH', desc: '跌了就骂，涨了就吹。你的朋友圈就是股市情绪晴雨表，喜怒哀乐全写在脸上。', traits: ['情绪外露','跌骂涨吹','真实坦诚','情绪化'] },
+  { code: 'BOT',  name: '量化机', pattern: 'MHMMLLMLHHHMLMH', desc: '毫无感情，全是策略。别人恐慌你加仓，别人贪婪你减仓——不是你心态好，是你的模型这么说的。', traits: ['机械执行','量化策略','毫无感情','概率思维'] },
+  { code: 'LUCK', name: '运气王', pattern: 'MLMLMHMLMLMLMML', desc: '闭眼赚钱，玄学笼罩。你什么都不懂，但就是能赚，气死那些研究到半夜的研究员。', traits: ['运气爆棚','瞎蒙全对','气死别人','锦鲤体质'] },
+  { code: 'FOMO', name: '追高侠', pattern: 'MLMLHHHHHLLMMLL', desc: '别人赚钱我眼红，我一买入就站岗。你是山顶最忠实的守望者，每次都在最高点插上你的旗帜。', traits: ['追高站岗','严重FOMO','山顶守望','旗手'] },
+  { code: 'PANI', name: '惊弓鸟', pattern: 'LLLLHHLLLLMHLLM', desc: '一有风吹草动就清仓。你的持仓时间按小时计算，稍微跌一点就全身而退。', traits: ['极度敏感','秒速清仓','草木皆兵','风声鹤唳'] },
+  { code: 'FLIP', name: '反复侠', pattern: 'MLMLMHMLLMLLMLL', desc: '昨天看多，今天看空。你的观点一天三变，每个都有理有据，但每次都恰好踩反。', traits: ['反复无常','自我否定','左右打脸','观点多变'] },
+  { code: 'LOTT', name: '刮刮乐', pattern: 'HHLLLLHHLLLMLML', desc: '只买低价垃圾股，梦想一票翻倍。1块钱的股票涨到2块就是100%，这不比买彩票强？', traits: ['低价股','梦想翻倍','彩票思维','赌博心态'] },
+  { code: 'FUND', name: '基民',   pattern: 'MHMLLMMLLMHHMHM', desc: '自己不买股，只买基金。你觉得专业的事该交给专业的人，虽然你的基金经理今年亏了30%。', traits: ['基金投资','专业信任','间接参与','躺平心态'] },
+  { code: 'ECHO', name: '回声筒', pattern: 'MLMLHLHHLMLMMLL', desc: '只听消息，没有主见。你的交易记录就是各种小道消息的合集，虽然还没一条是真的。', traits: ['消息驱动','毫无主见','道听途说','随波逐流'] },
+  { code: 'INTJ', name: '独狼',   pattern: 'HHHLLMHHLMHHHHH', desc: '独自研究，孤独交易。你从不和别人讨论股票，因为你觉得没人配和你交流。', traits: ['独自研究','孤独交易','高度自信','曲高和寡'] },
+  { code: 'DAZE', name: '发呆者', pattern: 'MLMLMHMLMLMLMMM', desc: '买了就忘，密码都丢。你连自己买了什么都记不清，等某天突然想起来一看——居然赚了。', traits: ['买了就忘','佛系持有','密码丢失','意外惊喜'] },
+];
+
+// 特殊人格
+const DRUNK_PERSONALITY = {
+  code: 'MARG', name: '杠杆狂',
+  desc: '杠杆拉满，要么会所嫩模，要么下海干活。你的人生信条是"富贵险中求"，1倍收益是侮辱，3倍起步才叫投资。爆仓对你来说不是终点，而是下一轮加杠杆的起点。市场因为你而波动，券商因为你而盈利。',
+  traits: ['杠杆拉满','梭哈狂魔','爆仓常客','赌性坚强']
+};
+const FALLBACK_PERSONALITY = {
+  code: 'LEEK', name: '纯韭菜',
+  desc: '由于您的炒股逻辑过于清奇，连当韭菜都不符合标准，市场已全面崩溃。你的操作完全没有规律可循，连庄家都不知道该怎么收割你。',
+  traits: ['清奇逻辑','无法分类','韭菜之光','市场崩溃']
+};
+
+// 维度等级描述
+const DIM_DESCS = {
+  R1: { L: '绿光一闪，心跳骤停', M: '亏点小钱就当交学费', H: '腰斩斩仓，面不改色' },
+  R2: { L: '波动一来，如坐针毡', M: '随波逐流，尚能呼吸', H: '惊涛骇浪，稳如泰山' },
+  R3: { L: '手起刀落，绝不恋战', M: '犹豫再三，含泪挥刀', H: '死扛到底，绝不割肉' },
+  L1: { L: '财报为王，估值是命', M: '基本面加一点想象', H: '啥基本面？看图就行' },
+  L2: { L: 'K线是什么？不看', M: '辅助参考，不可全信', H: '金叉死叉，就是真理' },
+  L3: { L: '消息太吵，我不听', M: '参考一下，谨慎跟风', H: '听说啥？赶紧上车' },
+  E1: { L: '见好就收，落袋为安', M: '赚了想赚更多，但又怕', H: '涨了加仓，梭哈干' },
+  E2: { L: '一跌就慌，赶紧跑', M: '跌了难受，但能忍', H: '越跌越买，逆向加仓' },
+  E3: { L: '别人赚了与我无关', M: '有点眼红，控制住', H: '踏空比亏钱还难受' },
+  Ac1: { L: '日内做T，快进快出', M: '波段操作，适度换手', H: '长期持有，不动如山' },
+  Ac2: { L: '看对眼就买，干脆利落', M: '想一想再决定', H: '反复研究，犹豫不决' },
+  Ac3: { L: '三天不涨就换股', M: '能等个半年再说', H: '死拿到底，逻辑不变不走' },
+  C1: { L: '赌场论者，零和博弈', M: '市场有风险也有价值', H: '价值创造，长期向上' },
+  C2: { L: '独立思考，逆向而行', M: '参考他人，自己做主', H: '盲从大V，随波逐流' },
+  C3: { L: '盈亏归己，反思迭代', M: '半靠自己半靠命', H: '赚钱靠运气，亏钱怪庄家' },
+};
+
+// ===== 核心逻辑 =====
+let currentQ = 0;
+let scores = {}; // { R1: 0, R2: 0, ... }
+let isDrunk = false;
+let isBonusPhase = false;
+let bonusStep = 0;
+let shuffledQuestions = []; // 随机排序后的题目
+
+// 初始化分数
+DIMENSIONS.forEach(d => { scores[d.key] = 0; });
+
+// 分数转等级
+function sumToLevel(score) {
+  if (score <= 3) return 'L';
+  if (score === 4) return 'M';
+  return 'H';
+}
+
+// 显示页面
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+// Fisher-Yates 洗牌算法
+function shuffleArray(array) {
+  const shuffled = [...array];
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+  return shuffled;
+}
+
+// 开始测试
+function startQuiz() {
+  currentQ = 0;
+  isDrunk = false;
+  isBonusPhase = false;
+  bonusStep = 0;
+  DIMENSIONS.forEach(d => { scores[d.key] = 0; });
+  shuffledQuestions = shuffleArray(QUESTIONS); // 随机排序题目
+  showPage('quizPage');
+  renderQuestion();
+}
+
+// 渲染题目
+function renderQuestion() {
+  const card = document.getElementById('questionCard');
+  const q = shuffledQuestions[currentQ];
+  const dim = DIMENSIONS.find(d => d.key === q.dim);
+
+  // 更新进度
+  document.getElementById('qCurrent').textContent = currentQ + 1;
+  document.getElementById('qTotal').textContent = QUESTIONS.length;
+  document.getElementById('progressFill').style.width = ((currentQ + 1) / QUESTIONS.length * 100) + '%';
+  document.getElementById('dimLabel').textContent = dim.group;
+
+  // 动画：先淡出
+  card.classList.add('fade-out');
+
+  setTimeout(() => {
+    // 更新内容
+    document.getElementById('qText').textContent = q.text;
+    const container = document.getElementById('optionsContainer');
+    container.innerHTML = '';
+
+    q.opts.forEach((opt, idx) => {
+      const btn = document.createElement('button');
+      btn.className = 'option-btn';
+      btn.setAttribute('aria-label', '选项' + opt.letter);
+      btn.innerHTML = `<span class="opt-letter">${opt.letter}</span><span>${opt.text}</span>`;
+      btn.addEventListener('click', () => selectOption(opt.score, btn));
+      container.appendChild(btn);
+    });
+
+    // 动画：淡入
+    card.classList.remove('fade-out');
+    card.classList.add('fade-in');
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        card.classList.remove('fade-in');
+      });
+    });
+  }, 300);
+}
+
+// 选择选项
+function selectOption(score, btnEl) {
+  // 防止重复点击
+  if (btnEl.classList.contains('selected')) return;
+  document.querySelectorAll('.option-btn').forEach(b => {
+    b.style.pointerEvents = 'none';
+  });
+  btnEl.classList.add('selected');
+
+  const q = shuffledQuestions[currentQ];
+  scores[q.dim] += score;
+
+  // 延迟后进入下一题
+  setTimeout(() => {
+    currentQ++;
+    if (currentQ < QUESTIONS.length) {
+      renderQuestion();
+    } else {
+      // 30题答完，进入补充题
+      isBonusPhase = true;
+      bonusStep = 1;
+      renderBonusQuestion();
+    }
+  }, 500);
+}
+
+// 渲染补充题
+function renderBonusQuestion() {
+  const card = document.getElementById('questionCard');
+  const qData = bonusStep === 1 ? BONUS_Q1 : BONUS_Q2;
+
+  document.getElementById('qCurrent').textContent = '31';
+  document.getElementById('qTotal').textContent = '31';
+  document.getElementById('progressFill').style.width = '100%';
+  document.getElementById('dimLabel').textContent = '隐藏触发题';
+
+  card.classList.add('fade-out');
+  setTimeout(() => {
+    document.getElementById('qText').textContent = qData.text;
+    const container = document.getElementById('optionsContainer');
+    container.innerHTML = '';
+
+    qData.opts.forEach((opt, idx) => {
+      const btn = document.createElement('button');
+      btn.className = 'option-btn';
+      btn.setAttribute('aria-label', '选项' + opt.letter);
+      btn.innerHTML = `<span class="opt-letter">${opt.letter}</span><span>${opt.text}</span>`;
+      btn.addEventListener('click', () => selectBonusOption(opt, btn));
+      container.appendChild(btn);
+    });
+
+    card.classList.remove('fade-out');
+    card.classList.add('fade-in');
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        card.classList.remove('fade-in');
+      });
+    });
+  }, 300);
+}
+
+// 选择补充题选项
+function selectBonusOption(opt, btnEl) {
+  if (btnEl.classList.contains('selected')) return;
+  document.querySelectorAll('.option-btn').forEach(b => {
+    b.style.pointerEvents = 'none';
+  });
+  btnEl.classList.add('selected');
+
+  if (opt.next === 'drunk') {
+    isDrunk = true;
+    setTimeout(() => showResult(), 600);
+  } else if (opt.next === 'bonus2') {
+    bonusStep = 2;
+    setTimeout(() => renderBonusQuestion(), 500);
+  } else {
+    setTimeout(() => showResult(), 600);
+  }
+}
+
+// 显示结果
+function showResult() {
+  showPage('resultPage');
+
+  let resultCode, resultName, resultDesc, resultTraits, matchPct;
+
+  if (isDrunk) {
+    // 触发杠杆狂
+    resultCode = DRUNK_PERSONALITY.code;
+    resultName = DRUNK_PERSONALITY.name;
+    resultDesc = DRUNK_PERSONALITY.desc;
+    resultTraits = DRUNK_PERSONALITY.traits;
+    matchPct = 100;
+  } else {
+    // 计算用户向量
+    const userLevels = DIMENSIONS.map(d => sumToLevel(scores[d.key]));
+    const userVec = userLevels.map(l => l === 'L' ? 1 : l === 'M' ? 2 : 3);
+
+    // 匹配
+    let bestDist = Infinity;
+    let bestP = null;
+
+    PERSONALITIES.forEach(p => {
+      const pLevels = p.pattern.split('');
+      const pVec = pLevels.map(l => l === 'L' ? 1 : l === 'M' ? 2 : 3);
+      let dist = 0;
+      for (let i = 0; i < 15; i++) {
+        dist += Math.abs(userVec[i] - pVec[i]);
+      }
+      if (dist < bestDist) {
+        bestDist = dist;
+        bestP = p;
+      }
+    });
+
+    matchPct = Math.max(0, Math.round((1 - bestDist / 30) * 100));
+
+    if (matchPct < 60) {
+      // 兜底人格
+      resultCode = FALLBACK_PERSONALITY.code;
+      resultName = FALLBACK_PERSONALITY.name;
+      resultDesc = FALLBACK_PERSONALITY.desc;
+      resultTraits = FALLBACK_PERSONALITY.traits;
+    } else {
+      resultCode = bestP.code;
+      resultName = bestP.name;
+      resultDesc = bestP.desc;
+      resultTraits = bestP.traits;
+    }
+  }
+
+  // 渲染结果
+  document.getElementById('resCode').textContent = resultCode;
+  document.getElementById('resName').textContent = resultName;
+  document.getElementById('resMatch').textContent = matchPct;
+  document.getElementById('resDesc').textContent = resultDesc;
+
+  // 渲染特征标签
+  const traitsContainer = document.getElementById('resTraits');
+  traitsContainer.innerHTML = '';
+  resultTraits.forEach(t => {
+    const tag = document.createElement('span');
+    tag.className = 'trait-tag';
+    tag.textContent = t;
+    traitsContainer.appendChild(tag);
+  });
+
+  // 渲染维度图
+  renderDimBars();
+}
+
+// 渲染维度条形图
+function renderDimBars() {
+  const container = document.getElementById('dimBars');
+  container.innerHTML = '';
+
+  let currentGroup = '';
+  DIMENSIONS.forEach((d, i) => {
+    if (d.group !== currentGroup) {
+      currentGroup = d.group;
+      const groupTitle = document.createElement('div');
+      groupTitle.className = 'dim-group-title';
+      groupTitle.textContent = currentGroup;
+      container.appendChild(groupTitle);
+    }
+
+    const level = sumToLevel(scores[d.key]);
+    const desc = DIM_DESCS[d.key][level];
+
+    const row = document.createElement('div');
+    row.className = 'dim-row';
+    row.innerHTML = `
+      <span class="dim-label" title="${desc}">${d.name}</span>
+      <div class="dim-bar-bg"><div class="dim-bar-fill ${level}" style="width:0"></div></div>
+      <span class="dim-level ${level}">${level}</span>
+    `;
+    container.appendChild(row);
+
+    // 动画延迟填充
+    setTimeout(() => {
+      row.querySelector('.dim-bar-fill').style.width = level === 'L' ? '33.3%' : level === 'M' ? '66.6%' : '100%';
+    }, 300 + i * 80);
+  });
+}
+
+// 重新测试
+function restartQuiz() {
+  DIMENSIONS.forEach(d => { scores[d.key] = 0; });
+  currentQ = 0;
+  isDrunk = false;
+  isBonusPhase = false;
+  bonusStep = 0;
+  showPage('startPage');
+}
+
+// Toast 提示
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+// ===== K线背景装饰 =====
+const canvas = document.getElementById('klineCanvas');
+const ctx = canvas.getContext('2d');
+let w, h;
+const bars = [];
+const BAR_COUNT = 40;
+
+function resize() {
+  w = canvas.parentElement.clientWidth;
+  h = 120;
+  canvas.width = w;
+  canvas.height = h;
+}
+
+function initBars() {
+  bars.length = 0;
+  let price = 60;
+  for (let i = 0; i < BAR_COUNT; i++) {
+    const open = price;
+    const change = (Math.random() - 0.48) * 15;
+    const close = open + change;
+    const high = Math.max(open, close) + Math.random() * 8;
+    const low = Math.min(open, close) - Math.random() * 8;
+    bars.push({ open, close, high, low });
+    price = close;
+  }
+}
+
+function draw() {
+  ctx.clearRect(0, 0, w, h);
+  const barW = Math.max(2, w / BAR_COUNT - 2);
+  const gap = w / BAR_COUNT;
+  const scale = h / 150;
+  const offset = 30;
+
+  bars.forEach((b, i) => {
+    const x = i * gap + gap / 2;
+    const isUp = b.close >= b.open;
+    ctx.strokeStyle = isUp ? '#ff5252' : '#00e676';
+    ctx.fillStyle = isUp ? '#ff5252' : '#00e676';
+    ctx.lineWidth = 1;
+
+    // 影线
+    ctx.beginPath();
+    ctx.moveTo(x, h - (b.high - offset) * scale);
+    ctx.lineTo(x, h - (b.low - offset) * scale);
+    ctx.stroke();
+
+    // 实体
+    const top = h - (Math.max(b.open, b.close) - offset) * scale;
+    const bottom = h - (Math.min(b.open, b.close) - offset) * scale;
+    const bodyH = Math.max(1, bottom - top);
+    if (isUp) {
+      ctx.strokeRect(x - barW / 2, top, barW, bodyH);
+    } else {
+      ctx.fillRect(x - barW / 2, top, barW, bodyH);
+    }
+  });
+
+  // 定期添加新K线
+  if (Math.random() < 0.03) {
+    const last = bars[bars.length - 1];
+    const open = last.close;
+    const change = (Math.random() - 0.48) * 15;
+    const close = open + change;
+    const high = Math.max(open, close) + Math.random() * 8;
+    const low = Math.min(open, close) - Math.random() * 8;
+    bars.push({ open, close, high, low });
+    if (bars.length > BAR_COUNT) bars.shift();
+  }
+
+  requestAnimationFrame(draw);
+}
+
+resize();
+initBars();
+draw();
+window.addEventListener('resize', () => { resize(); initBars(); });
+
+// 键盘支持：1/A, 2/B, 3/C 快捷选择
+document.addEventListener('keydown', (e) => {
+  const quizPage = document.getElementById('quizPage');
+  if (!quizPage.classList.contains('active')) return;
+
+  const keyMap = { '1': 0, '2': 1, '3': 2, 'a': 0, 'b': 1, 'c': 2, 'A': 0, 'B': 1, 'C': 2 };
+  const idx = keyMap[e.key];
+  if (idx !== undefined) {
+    const btns = document.querySelectorAll('.option-btn');
+    if (btns[idx] && !btns[idx].classList.contains('selected')) {
+      btns[idx].click();
+    }
+  }
+});
+</script>
+
+</body>
+</html>

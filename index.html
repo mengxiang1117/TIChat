@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>人格测试集合</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+<style>
+  :root {
+    --bg: #e8f4fc;
+    --bg-deep: #d0e8f9;
+    --card: #ffffff;
+    --card-border: #b8d4e8;
+    --text: #1e3a5f;
+    --text-muted: #5a7b9a;
+    --accent: #4a90d9;
+    --accent-light: #6bb3f0;
+    --radius: 16px;
+    --shadow: 0 4px 24px rgba(30, 58, 95, 0.08);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Noto Sans SC', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* 淡蓝色背景装饰 */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(ellipse at 20% 20%, rgba(107, 179, 240, 0.25) 0%, transparent 50%),
+      radial-gradient(ellipse at 80% 80%, rgba(74, 144, 217, 0.2) 0%, transparent 50%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .container {
+    position: relative;
+    z-index: 1;
+  }
+
+  .container {
+    max-width: 720px;
+    width: 100%;
+    text-align: center;
+  }
+
+  .header {
+    margin-bottom: 48px;
+    animation: fadeInUp 0.6s ease-out;
+  }
+
+  .header h1 {
+    font-size: 42px;
+    font-weight: 900;
+    margin-bottom: 12px;
+    background: linear-gradient(135deg, var(--accent), #2d6bb0);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .header p {
+    font-size: 16px;
+    color: var(--text-muted);
+    line-height: 1.7;
+  }
+
+  .cards {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    margin-bottom: 32px;
+  }
+
+  .card {
+    background: var(--card);
+    border: 1px solid var(--card-border);
+    border-radius: var(--radius);
+    padding: 32px 24px;
+    text-decoration: none;
+    color: inherit;
+    transition: all 0.3s ease;
+    box-shadow: var(--shadow);
+    animation: fadeInUp 0.6s ease-out both;
+  }
+
+  .card:nth-child(1) { animation-delay: 0.1s; }
+  .card:nth-child(2) { animation-delay: 0.2s; }
+
+  .card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 48px rgba(30, 58, 95, 0.15);
+    border-color: var(--accent);
+  }
+
+  .card .icon {
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    margin: 0 auto 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 32px;
+    color: #fff;
+    background: linear-gradient(135deg, var(--accent), var(--accent-light));
+    box-shadow: 0 6px 20px rgba(74, 144, 217, 0.35);
+  }
+
+  .card h2 {
+    font-size: 24px;
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+
+  .card p {
+    font-size: 14px;
+    color: var(--text-muted);
+    line-height: 1.6;
+  }
+
+  .footer {
+    margin-top: 32px;
+    font-size: 13px;
+    color: var(--text-muted);
+    animation: fadeInUp 0.6s ease-out 0.3s both;
+  }
+
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @media (max-width: 640px) {
+    .header h1 { font-size: 32px; }
+    .cards { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <div class="header">
+    <h1>人格测试集合</h1>
+    <p>选择一个测试，探索真实的自己</p>
+  </div>
+
+  <div class="cards">
+    <a href="NMTI.html" class="card">
+      <div class="icon">
+        <i class="fas fa-horse"></i>
+      </div>
+      <h2>NMTI 牛马程度测试</h2>
+      <p>30道题，揭秘你的职场牛马浓度</p>
+    </a>
+
+    <a href="STTI.html" class="card">
+      <div class="icon">
+        <i class="fas fa-chart-line"></i>
+      </div>
+      <h2>STTI 股票投资人格测试</h2>
+      <p>30道题，测出你在股市中的真实人格</p>
+    </a>
+    <a href="SBTI.html" class="card">
+      <div class="icon">
+        <i class="fas fa-face-laugh-beam"></i>
+      </div>
+      <h2>SBTI 测试你的搞笑MBTI</h2>
+      <p>30道题，测出你的搞笑MBTI类型</p>
+    </a>
+
+  </div>
+
+  <div class="footer">
+    <p>注：测试结果仅供娱乐参考</p>
+  </div>
+</div>
+
+</body>
+</html>

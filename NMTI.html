@@ -1,0 +1,903 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NMTI 牛马程度测试</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f5f2ed;
+    --bg-deep: #ebe6df;
+    --card: #ffffff;
+    --card-border: #d4cdc4;
+    --text: #2c2824;
+    --text-muted: #7a7168;
+    --accent: #a0714f;
+    --accent-light: #c8956a;
+    --accent-glow: rgba(160, 113, 79, 0.15);
+    --gray: #5c5650;
+    --gray-light: #9e958c;
+    --danger: #c45c4a;
+    --success: #5a8a5e;
+    --radius: 16px;
+    --shadow: 0 4px 24px rgba(44, 40, 36, 0.08);
+    --shadow-lg: 0 12px 48px rgba(44, 40, 36, 0.12);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Noto Sans SC', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* 背景装饰 */
+  .bg-decor {
+    position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden;
+  }
+  .bg-decor .blob {
+    position: absolute; border-radius: 50%; filter: blur(80px); opacity: 0.35;
+  }
+  .bg-decor .blob-1 {
+    width: 500px; height: 500px; background: #c8956a; top: -150px; right: -100px;
+    animation: blobFloat 18s ease-in-out infinite;
+  }
+  .bg-decor .blob-2 {
+    width: 400px; height: 400px; background: #8b7355; bottom: -100px; left: -80px;
+    animation: blobFloat 22s ease-in-out infinite reverse;
+  }
+  .bg-decor .blob-3 {
+    width: 300px; height: 300px; background: #d4a574; top: 50%; left: 50%; transform: translate(-50%, -50%);
+    animation: blobFloat 15s ease-in-out infinite;
+  }
+  @keyframes blobFloat {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    33% { transform: translate(30px, -20px) scale(1.05); }
+    66% { transform: translate(-20px, 15px) scale(0.95); }
+  }
+
+  /* 细微网格背景 */
+  .bg-grid {
+    position: fixed; inset: 0; z-index: 0; pointer-events: none;
+    background-image:
+      linear-gradient(rgba(160,113,79,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(160,113,79,0.04) 1px, transparent 1px);
+    background-size: 40px 40px;
+  }
+
+  /* 主容器 */
+  .app-container {
+    position: relative; z-index: 1;
+    min-height: 100vh; display: flex; flex-direction: column;
+    align-items: center; justify-content: center; padding: 24px;
+  }
+
+  /* ========== 开始页 ========== */
+  .start-screen {
+    text-align: center; max-width: 520px;
+    animation: fadeSlideUp 0.8s ease-out;
+  }
+  .start-screen .icon-circle {
+    width: 100px; height: 100px; border-radius: 50%; margin: 0 auto 28px;
+    background: linear-gradient(135deg, var(--accent), var(--accent-light));
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 8px 32px rgba(160, 113, 79, 0.3);
+    animation: iconPulse 3s ease-in-out infinite;
+  }
+  .start-screen .icon-circle i { font-size: 42px; color: #fff; }
+  @keyframes iconPulse {
+    0%, 100% { transform: scale(1); box-shadow: 0 8px 32px rgba(160,113,79,0.3); }
+    50% { transform: scale(1.05); box-shadow: 0 12px 40px rgba(160,113,79,0.4); }
+  }
+  .start-screen h1 {
+    font-size: 42px; font-weight: 900; letter-spacing: -1px; line-height: 1.2;
+    margin-bottom: 8px;
+    background: linear-gradient(135deg, var(--accent), #6b4a2e);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .start-screen .subtitle {
+    font-size: 16px; color: var(--text-muted); margin-bottom: 32px; line-height: 1.7;
+  }
+  .start-screen .info-cards {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 36px;
+  }
+  .start-screen .info-card {
+    background: var(--card); border: 1px solid var(--card-border); border-radius: 12px;
+    padding: 16px 8px; text-align: center;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .start-screen .info-card:hover {
+    transform: translateY(-2px); box-shadow: var(--shadow);
+  }
+  .start-screen .info-card .num { font-size: 24px; font-weight: 900; color: var(--accent); }
+  .start-screen .info-card .label { font-size: 12px; color: var(--text-muted); margin-top: 4px; }
+
+  /* ========== 按钮 ========== */
+  .btn-primary {
+    display: inline-flex; align-items: center; gap: 10px;
+    padding: 16px 40px; border: none; border-radius: 50px; cursor: pointer;
+    font-family: inherit; font-size: 17px; font-weight: 700;
+    background: linear-gradient(135deg, var(--accent), var(--accent-light));
+    color: #fff; box-shadow: 0 6px 24px rgba(160,113,79,0.35);
+    transition: all 0.3s ease;
+  }
+  .btn-primary:hover {
+    transform: translateY(-2px); box-shadow: 0 10px 32px rgba(160,113,79,0.45);
+  }
+  .btn-primary:active { transform: translateY(0); }
+
+  .btn-secondary {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 12px 28px; border: 2px solid var(--card-border); border-radius: 50px;
+    cursor: pointer; font-family: inherit; font-size: 15px; font-weight: 500;
+    background: var(--card); color: var(--text); transition: all 0.25s ease;
+  }
+  .btn-secondary:hover {
+    border-color: var(--accent); color: var(--accent); transform: translateY(-1px);
+  }
+
+  /* ========== 测试页 ========== */
+  .quiz-screen {
+    width: 100%; max-width: 600px;
+    animation: fadeSlideUp 0.5s ease-out;
+  }
+
+  /* 顶部进度区域 */
+  .quiz-header { margin-bottom: 24px; }
+  .quiz-top-bar {
+    display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;
+  }
+  .quiz-top-bar .category-tag {
+    font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;
+    color: var(--accent); background: var(--accent-glow);
+    padding: 4px 12px; border-radius: 20px;
+  }
+  .quiz-top-bar .progress-text { font-size: 13px; color: var(--text-muted); font-weight: 500; }
+  .progress-bar-track {
+    width: 100%; height: 6px; background: var(--bg-deep); border-radius: 3px; overflow: hidden;
+  }
+  .progress-bar-fill {
+    height: 100%; border-radius: 3px;
+    background: linear-gradient(90deg, var(--success), #8ab34e, #c8956a, var(--danger));
+    transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  /* 题目卡片 */
+  .question-card {
+    background: var(--card); border: 1px solid var(--card-border);
+    border-radius: var(--radius); padding: 32px 28px;
+    box-shadow: var(--shadow); position: relative; overflow: hidden;
+  }
+  .question-card::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px;
+    background: linear-gradient(90deg, var(--accent), var(--accent-light));
+  }
+  .question-number {
+    font-size: 13px; color: var(--gray-light); font-weight: 500; margin-bottom: 12px;
+  }
+  .question-text {
+    font-size: 19px; font-weight: 700; line-height: 1.6; margin-bottom: 28px;
+    color: var(--text);
+  }
+
+  /* 选项 */
+  .options-list { display: flex; flex-direction: column; gap: 12px; }
+  .option-btn {
+    display: flex; align-items: center; gap: 14px;
+    width: 100%; padding: 16px 20px; border: 2px solid var(--card-border);
+    border-radius: 12px; background: var(--bg); cursor: pointer;
+    font-family: inherit; font-size: 15px; color: var(--text); text-align: left;
+    transition: all 0.25s ease; position: relative; overflow: hidden;
+  }
+  .option-btn:hover {
+    border-color: var(--accent-light); background: var(--accent-glow);
+    transform: translateX(4px);
+  }
+  .option-btn:active { transform: translateX(2px) scale(0.99); }
+  .option-btn .option-letter {
+    width: 32px; height: 32px; border-radius: 50%; flex-shrink: 0;
+    background: var(--card); border: 2px solid var(--card-border);
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 13px; color: var(--gray);
+    transition: all 0.25s ease;
+  }
+  .option-btn:hover .option-letter {
+    border-color: var(--accent); color: var(--accent);
+  }
+  .option-btn.selected {
+    border-color: var(--accent); background: var(--accent-glow);
+    animation: optionPop 0.3s ease;
+  }
+  .option-btn.selected .option-letter {
+    background: var(--accent); border-color: var(--accent); color: #fff;
+  }
+  @keyframes optionPop {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.02); }
+    100% { transform: scale(1); }
+  }
+
+  /* 题目切换动画 */
+  .question-card.entering {
+    animation: cardEnter 0.45s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+  }
+  .question-card.exiting {
+    animation: cardExit 0.3s cubic-bezier(0.4, 0, 1, 1) forwards;
+  }
+  @keyframes cardEnter {
+    from { opacity: 0; transform: translateY(30px) scale(0.97); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+  }
+  @keyframes cardExit {
+    from { opacity: 1; transform: translateY(0) scale(1); }
+    to { opacity: 0; transform: translateY(-20px) scale(0.97); }
+  }
+
+  /* ========== 结果页 ========== */
+  .result-screen {
+    width: 100%; max-width: 560px; text-align: center;
+    animation: fadeSlideUp 0.8s ease-out;
+  }
+  .result-badge {
+    width: 120px; height: 120px; border-radius: 50%; margin: 0 auto 24px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 36px; font-weight: 900; color: #fff;
+    box-shadow: 0 12px 40px rgba(0,0,0,0.15);
+    animation: resultBadgePop 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) 0.2s both;
+  }
+  @keyframes resultBadgePop {
+    from { opacity: 0; transform: scale(0.5) rotate(-10deg); }
+    to { opacity: 1; transform: scale(1) rotate(0deg); }
+  }
+  .result-type-code {
+    font-size: 52px; font-weight: 900; letter-spacing: -2px;
+    margin-bottom: 4px;
+    background: linear-gradient(135deg, var(--accent), #6b4a2e);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: fadeSlideUp 0.6s ease-out 0.3s both;
+  }
+  .result-type-name {
+    font-size: 24px; font-weight: 700; color: var(--text); margin-bottom: 16px;
+    animation: fadeSlideUp 0.6s ease-out 0.4s both;
+  }
+  .result-match {
+    display: inline-block; padding: 6px 20px; border-radius: 20px;
+    background: var(--accent-glow); color: var(--accent); font-weight: 700;
+    font-size: 14px; margin-bottom: 24px;
+    animation: fadeSlideUp 0.6s ease-out 0.45s both;
+  }
+  .result-desc {
+    font-size: 15px; line-height: 1.8; color: var(--text-muted);
+    margin-bottom: 32px; animation: fadeSlideUp 0.6s ease-out 0.5s both;
+  }
+
+  /* 维度可视化 */
+  .dimensions-card {
+    background: var(--card); border: 1px solid var(--card-border);
+    border-radius: var(--radius); padding: 24px; text-align: left;
+    margin-bottom: 24px; box-shadow: var(--shadow);
+    animation: fadeSlideUp 0.6s ease-out 0.55s both;
+  }
+  .dimensions-card h3 {
+    font-size: 15px; font-weight: 700; margin-bottom: 16px; color: var(--text);
+  }
+  .dim-group { margin-bottom: 16px; }
+  .dim-group:last-child { margin-bottom: 0; }
+  .dim-group-title {
+    font-size: 12px; font-weight: 700; color: var(--accent); text-transform: uppercase;
+    letter-spacing: 0.5px; margin-bottom: 8px;
+  }
+  .dim-row {
+    display: flex; align-items: center; gap: 10px; margin-bottom: 6px;
+  }
+  .dim-label { font-size: 13px; color: var(--text-muted); width: 80px; flex-shrink: 0; }
+  .dim-bar-track {
+    flex: 1; height: 8px; background: var(--bg-deep); border-radius: 4px; overflow: hidden;
+  }
+  .dim-bar-fill {
+    height: 100%; border-radius: 4px;
+    transition: width 1s cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+  .dim-bar-fill.L { background: #8ab34e; width: 33.3%; }
+  .dim-bar-fill.M { background: #c8956a; width: 66.6%; }
+  .dim-bar-fill.H { background: var(--danger); width: 100%; }
+  .dim-level {
+    font-size: 11px; font-weight: 700; width: 20px; text-align: center;
+  }
+  .dim-level.L { color: #8ab34e; }
+  .dim-level.M { color: #c8956a; }
+  .dim-level.H { color: var(--danger); }
+
+  .result-actions {
+    display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;
+    animation: fadeSlideUp 0.6s ease-out 0.6s both;
+  }
+
+  /* ========== 通用动画 ========== */
+  @keyframes fadeSlideUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Toast 通知 */
+  .toast {
+    position: fixed; bottom: 32px; left: 50%; transform: translateX(-50%) translateY(20px);
+    background: var(--text); color: #fff; padding: 12px 24px; border-radius: 12px;
+    font-size: 14px; font-weight: 500; opacity: 0; z-index: 100;
+    transition: all 0.3s ease; pointer-events: none;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+  }
+  .toast.visible { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  /* 响应式 */
+  @media (max-width: 640px) {
+    .start-screen h1 { font-size: 32px; }
+    .question-card { padding: 24px 20px; }
+    .question-text { font-size: 17px; }
+    .result-type-code { font-size: 40px; }
+    .start-screen .info-cards { grid-template-columns: repeat(3, 1fr); gap: 8px; }
+    .start-screen .info-card { padding: 12px 4px; }
+  }
+
+  /* 减少动画偏好 */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+</style>
+</head>
+<body>
+
+<!-- 背景装饰 -->
+<div class="bg-decor">
+  <div class="blob blob-1"></div>
+  <div class="blob blob-2"></div>
+  <div class="blob blob-3"></div>
+</div>
+<div class="bg-grid"></div>
+
+<!-- 主容器 -->
+<div class="app-container" id="app"></div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ========== 题库数据 ==========
+const categories = [
+  { name: '认知模型', tag: 'C', dims: ['C1 职场自尊', 'C2 画饼吸收率', 'C3 核心内驱力'] },
+  { name: '情绪模型', tag: 'E', dims: ['E1 老板依赖度', 'E2 怨气投入度', 'E3 边界感丧失'] },
+  { name: '态度模型', tag: 'A', dims: ['A1 职场世界观', 'A2 规则服从度', 'A3 意义感丧失'] },
+  { name: '行动驱力', tag: 'Ac', dims: ['Ac1 动机导向', 'Ac2 决策风格', 'Ac3 执行模式'] },
+  { name: '社交模型', tag: 'S', dims: ['So1 社交主动性', 'So2 职场距离感', 'So3 表演与真实度'] }
+];
+
+// 30道核心题 + 1道补充题
+const questions = [
+  // C1 职场自尊
+  { dim: 0, text: '领导在群里公开批评你，你的第一反应是？', options: ['当场反问，有理有据怼回去', '表面回复"收到"，心里暗骂', '瞬间破防，觉得是自己连累了团队'] },
+  { dim: 0, text: '你觉得自己目前的工作价值是？', options: ['混口饭吃，别谈价值', '偶尔有点成就感，大部分时间在造垃圾', '公司离不开我，我是中流砥柱！'] },
+  // C2 画饼吸收率
+  { dim: 1, text: '老板说"明年公司上市，大家都有期权"，你怎么想？', options: ['放屁，我又不是三岁', '听着乐呵，但只看当月工资', '热血沸腾，今晚自愿加班到十点'] },
+  { dim: 1, text: '对于"年轻人多吃苦是福报"，你的态度是？', options: ['谁爱吃苦谁吃，我只享福', '必要的苦能吃，无意义的苦免谈', '深信不疑，并在吃苦中感到升华'] },
+  // C3 核心内驱力
+  { dim: 2, text: '早上叫醒你的是？', options: ['闹钟按掉三次后的求生欲', '还没还完的花呗', '对事业的无限热爱'] },
+  { dim: 2, text: '如果财务自由了，你还会工作吗？', options: ['秒辞，原地消失', '可能换个轻松的爱好做做', '会，不工作我会感到空虚和罪恶'] },
+
+  // E1 老板依赖度
+  { dim: 3, text: '老板三天没找你，你是什么状态？', options: ['爽翻了，带薪摸鱼', '有点慌，是不是把我忘了', '极度焦虑，觉得自己要被优化了'] },
+  { dim: 3, text: '方案被老板全盘否定，你今晚的心情是？', options: ['无所谓，打工人不过渡劫', '有点郁闷，喝杯奶茶缓解', '彻夜难眠，疯狂反思自己是不是能力太差'] },
+  // E2 怨气投入度
+  { dim: 4, text: '周末正在打游戏，突然被叫去加班，你会？', options: ['直接装死，当没看见', '边骂骂咧咧边打开电脑', '叹口气，立刻进入工作状态，心里还觉得是自己的问题'] },
+  { dim: 4, text: '看到同事被老板PUA，你内心的OS是？', options: ['傻子才信，我吃瓜', '兔死狐悲，唇亡齿寒', '领导说得对，他确实需要反思'] },
+  // E3 边界感丧失
+  { dim: 5, text: '晚上十点，工作群弹出新消息，你会？', options: ['明天再说，手机静音', '看一眼，不急就装死，急了就回', '秒回，生怕老板等急了'] },
+  { dim: 5, text: '你去旅游时，朋友圈会发什么？', options: ['疯狂晒照，让老板知道我在爽', '仅老板可见分组：发一张带电脑的海景照', '根本不敢去旅游，或旅游还在全天处理工作'] },
+
+  // A1 职场世界观
+  { dim: 6, text: '你认为职场的本质是？', options: ['资本家剥削剩余价值的绞肉机', '互相利用的利益交换场', '实现人生阶层跃升的大家庭'] },
+  { dim: 6, text: '看到同事靠拍马屁升职，你怎么看？', options: ['恶心，公司迟早完蛋', '有点羡慕，但我干不来', '人家情商高，我得向他学习'] },
+  // A2 规则服从度
+  { dim: 7, text: '公司规定上班必须穿正装，大热天你穿吗？', options: ['偷偷穿拖鞋，领导来了再换', '选最薄的正装，半推半就', '严格遵守，并且觉得这样才有精神'] },
+  { dim: 7, text: '领导提了一个明显错误的方案，你怎么办？', options: ['当面指出，据理力争', '私下委婉暗示，他不听就算了', '坚决执行，领导一定有他的深意'] },
+  // A3 意义感丧失
+  { dim: 8, text: '天天做着重复的表格，你觉得你的工作有意义吗？', options: ['毫无意义，纯纯牛马', '是个跳板，忍忍就好', '意义重大，我是公司运转的基石'] },
+  { dim: 8, text: '当工作遇到巨大困难卡壳时，你的想法是？', options: ['烂摊子就烂摊子，摆了', '找人帮忙，或者绕道走', '迎难而上，我一定要战胜它（然后疯狂内耗）'] },
+
+  // Ac1 动机导向
+  { dim: 9, text: '有个新项目没人接，你怎么做？', options: ['缩在角落，千万别看我', '如果钱给够，我可以试试', '主动请缨！这是展现自我的好机会！'] },
+  { dim: 9, text: '涨薪500和双休，你选哪个？', options: ['绝对双休，命要紧', '看当前薪资水平决定', '涨薪！只要钱给够，单休也行！'] },
+  // Ac2 决策风格
+  { dim: 10, text: '工作出现了失误，背锅位空缺，你？', options: ['甩锅三连：不知道、不是我、没参与', '装死，能躲就躲', '勇敢站出来，都是我的错！'] },
+  { dim: 10, text: '两个方案各有优劣，老板让你定，你？', options: ['抛硬币，出事再说', '写个PPT让老板二选一', '果断选一个并承担所有后果'] },
+  // Ac3 执行模式
+  { dim: 11, text: '交报告的死线是下周五，你什么时候开始写？', options: ['下周四晚上', '这周末先列个提纲', '现在立刻马上开工！'] },
+  { dim: 11, text: '你平时的工作节奏是？', options: ['摸鱼4小时，干活10分钟', '稳步推进，到点下班', '全速狂飙，永远在处理突发'] },
+
+  // So1 社交主动性
+  { dim: 12, text: '部门团建聚餐，你的状态是？', options: ['能不去就不去，去了坐角落干饭', '随大流，当个合格的捧哏', '气氛组！主动敬酒，活跃全场！'] },
+  { dim: 12, text: '电梯里只有你和老板，你会？', options: ['盯着楼层数，假装没看见', '点头微笑，聊聊天气', '主动汇报工作进度，寻求指导'] },
+  // So2 职场距离感
+  { dim: 13, text: '同事想蹭你的视频会员，你怎么处理？', options: ['直接拒绝，我不看吗？', '找借口说账号异常登不上', '爽快分享，并觉得这是拉近关系的好机会'] },
+  { dim: 13, text: '你和同事的关系是？', options: ['都是竞争对手，防备着呢', '表面兄弟，下班不联系', '一家人！周末还经常约着玩'] },
+  // So3 表演与真实度
+  { dim: 14, text: '领导讲了个冷笑话，你笑吗？', options: ['一脸冷漠：不好笑', '呵呵，礼节性咧嘴', '捧腹大笑："领导太有才了！"'] },
+  { dim: 14, text: '你的职场人设和真实自我？', options: ['高度一致，我就是这副德行', '有一定伪装，但核心没变', '判若两人，职场我是演员，回家才是自己'] }
+];
+
+// 补充题（饮酒触发题的牛马版——离职触发）
+const drinkGateQ = {
+  text: '最近下班后，你最常做的事情是？',
+  options: ['躺平刷手机', '报班考证提升自己', '疯狂投简历面试'],
+  isGate: true
+};
+
+const drinkFollowQ = {
+  text: '你目前找新工作的状态是？',
+  options: ['骑驴找马，看机会', '裸辞也在所不惜'],
+  isFollow: true
+};
+
+// ========== 人格类型库 ==========
+const personalities = [
+  { code: 'DKJG', name: '达康书记', pattern: 'HHLHMHMHHHHHMHM', color: '#6b4a2e', desc: '规则掌控者，视工作如命。你把公司当成自己的封地，KPI就是你的政绩。你不仅有牛马的自觉，更有牛马管家的气质。', icon: 'fa-landmark' },
+  { code: 'CJNM', name: '纯血牛马', pattern: 'HHHHHHHHHHHHHHH', color: '#8b4513', desc: '毫无保留的奉献机器。你的血液里流淌的不是红细胞，而是Excel表格和PPT。你不是在上班，你就是在上班的灵魂状态。', icon: 'fa-horse' },
+  { code: 'SLGY', name: '摸鱼观音', pattern: 'LLLLLLLLLLLLLLL', color: '#5a8a5e', desc: '班是上的，鱼是摸的。你深谙职场生存哲学：不出头、不垫底、不加班。你是最清醒的那一个——看透了，也躺平了。', icon: 'fa-fish' },
+  { code: 'BGZJ', name: '背锅专家', pattern: 'HLHMHMMHHMHLMLL', color: '#7a6552', desc: '老实人，总在承担不该承担的。你的口头禅是"好的我来处理"，然后默默扛下所有。建议买份保险，受益人写自己。', icon: 'fa-shield-halved' },
+  { code: 'HBGW', name: '画饼胃王', pattern: 'LHHLHHLHHLHHLHH', color: '#c8956a', desc: '画饼全吃，从不消化。每次开会你都热血沸腾，每个OKR你都深信不疑。你是老板最喜欢的人，也是工资最低的人。', icon: 'fa-utensils' },
+  { code: 'ZCYD', name: '职场影帝', pattern: 'LLHLLHMMLMHLLHH', color: '#6a5acd', desc: '表面努力，实际摸鱼。你精通"看起来很忙"的所有技巧：快速打字其实在聊天，皱眉盯屏其实在发呆。你的演技值得一座小金人。', icon: 'fa-masks-theater' },
+  { code: 'JWZW', name: '卷王之王', pattern: 'MLHMHHMHHMHHMMM', color: '#c45c4a', desc: '自己卷自己，拉高所有人底线。你不需要老板催，你自己就是最严的监工。你的存在让同事焦虑，让老板偷笑。', icon: 'fa-fire' },
+  { code: 'QXBY', name: '情绪包衣', pattern: 'MHHMHHMHLMLLMML', color: '#9370db', desc: '极度敏感，被老板拿捏死。一个"嗯"能让你分析三小时，一次已读不回能让你失眠整晚。你是职场中的高敏族群。', icon: 'fa-heart-crack' },
+  { code: 'FX47', name: '佛系47', pattern: 'LLLMLLLMLLLLLLL', color: '#8b7355', desc: '不争不抢，按时打卡。你像寺庙里的和尚，上班就是修行。涨薪随缘，升职看命，你的工位就是你的结界。', icon: 'fa-yin-yang' },
+  { code: 'FKEC', name: '反卷刺客', pattern: 'LHLLLHLLLLHLLLH', color: '#2f4f4f', desc: '偶尔卷一下，震惊所有人。平时摸鱼度日，但关键时刻能亮剑。你的存在证明了：牛马也有尊严，打工人也有锋芒。', icon: 'fa-bolt' },
+  { code: 'JQNJ', name: '机器牛驹', pattern: 'HLLHHLHLLHHLHLL', color: '#708090', desc: '高效执行，没有感情。你把工作当程序来跑，输入需求，输出结果。不抱怨不内耗，是最佳工具人，也是最可怕的同事。', icon: 'fa-robot' },
+  { code: 'GTGH', name: '打工皇帝', pattern: 'HHMLHHMLHHMLHHM', color: '#daa520', desc: '打工打出主人翁的感觉。你比老板还在乎公司，比股东还关心股价。你不是在打工，你是在经营你的帝国（虽然股份为0）。', icon: 'fa-crown' },
+  { code: 'YLMX', name: '养老萌新', pattern: 'LLLMMMHHHLLLMMM', color: '#66cdaa', desc: '入行即养老，年纪轻轻心态六十。你已经看透了一切职场把戏，所以选择在最年轻的年纪过最佛系的生活。', icon: 'fa-mug-hot' },
+  { code: 'ZCGM', name: '职场滚刀肉', pattern: 'MMMLLLMMMMLLMMM', color: '#a0522d', desc: '刀枪不入，油盐不进。你经历过太多PUA已经免疫，画饼对你无效，威胁对你无用。你是职场最难搞定的存在——但你还在这。', icon: 'fa-shield' },
+  { code: 'NMZS', name: '牛马战士', pattern: 'HHHMLLHHHMLLHHH', color: '#b22222', desc: '一边骂骂咧咧，一边疯狂输出。嘴上说着"老子不干了"，手上方案已经交了三版。你是最矛盾的存在——身体是牛马，灵魂是战士。', icon: 'fa-hand-fist' },
+  { code: 'DSBY', name: '独狼摆烂', pattern: 'LLLLHHLLLLHHLLH', color: '#556b2f', desc: '不合群，不努力，但关键时刻总能苟住。你像荒野中的孤狼，不参与内卷，也不接受指挥，但你总能活到最后。', icon: 'fa-paw' },
+  { code: 'MRZD', name: '迷人渣打', pattern: 'MHHMHHMHHMHHMHH', color: '#db7093', desc: '又菜又爱卷，又懒又焦虑。你想努力但摸了鱼，你摸了鱼又很内疚。你是最典型的当代打工人——永远在自我折磨中前进。', icon: 'fa-face-dizzy' },
+  { code: 'PRZJ', name: '疲软战士', pattern: 'MMMLMMMLMMMMLMM', color: '#cd853f', desc: '曾经的热血少年，如今的温水青蛙。你不是不想卷，是实在卷不动了。你还在坚持，只是脚步越来越慢。', icon: 'fa-battery-quarter' }
+];
+
+// 特殊人格
+const specialPersonalities = {
+  RUN: { code: 'RUN', name: '润人', color: '#2e8b57', desc: '你的心已经不在工位上了。你正在疯狂寻找出口，准备随时撤离。你不是牛马，你是一匹即将脱缰的野马。祝你好运，前方的草原在等你！', icon: 'fa-person-running' },
+  RRRR: { code: 'RRRR', name: '机器人', color: '#4682b4', desc: '由于您的牛马属性过于复杂，系统判定您既不是人也不是马，已自动升级为自动化办公AI。您的思维回路过于清奇，标准人格库已全面崩溃。', icon: 'fa-microchip' }
+};
+
+// 维度名称（顺序）
+const dimNames = [
+  'C1 职场自尊', 'C2 画饼吸收率', 'C3 核心内驱力',
+  'E1 老板依赖度', 'E2 怨气投入度', 'E3 边界感丧失',
+  'A1 职场世界观', 'A2 规则服从度', 'A3 意义感丧失',
+  'Ac1 动机导向', 'Ac2 决策风格', 'Ac3 执行模式',
+  'So1 社交主动性', 'So2 职场距离感', 'So3 表演与真实度'
+];
+
+// 维度等级描述
+const dimLevelDesc = {
+  'C1 职场自尊': { L: '整顿职场预备役', M: '间歇性骄傲', H: '天选牛马自觉' },
+  'C2 画饼吸收率': { L: '免疫画饼', M: '半信半疑', H: '饼来张口' },
+  'C3 核心内驱力': { L: '只求生存', M: '偶尔有梦', H: '事业永动机' },
+  'E1 老板依赖度': { L: '自给自足', M: '患得患失', H: '老板焦虑症' },
+  'E2 怨气投入度': { L: '关我啥事', M: '边骂边干', H: '反思型内耗' },
+  'E3 边界感丧失': { L: '铁壁铜墙', M: '弹性边界', H: '全天候待机' },
+  'A1 职场世界观': { L: '人间清醒', M: '半梦半醒', H: '相信大家庭' },
+  'A2 规则服从度': { L: '规则是什么', M: '看情况遵守', H: '规则即信仰' },
+  'A3 意义感丧失': { L: '虚无主义者', M: '偶尔找到意义', H: '螺丝钉荣光' },
+  'Ac1 动机导向': { L: '多一事不如少一事', M: '钱给够就行', H: '主动出击' },
+  'Ac2 决策风格': { L: '甩锅达人', M: '能躲就躲', H: '勇担重任' },
+  'Ac3 执行模式': { L: '死线战士', M: '稳步推进', H: '全速狂飙' },
+  'So1 社交主动性': { L: '小透明', M: '随大流', H: '气氛组' },
+  'So2 职场距离感': { L: '社交围墙', M: '表面兄弟', H: '亲密无间' },
+  'So3 表演与真实度': { L: '表里如一', M: '适度伪装', H: '双面人生' }
+};
+
+// ========== 应用状态 ==========
+let currentScreen = 'start'; // start, quiz, result
+let currentQuestion = 0;
+let scores = new Array(15).fill(0); // 15个维度得分
+let isAnimating = false;
+let gateTriggered = false; // 是否触发了隐藏题
+let isDrunkMode = false; // 是否触发了润人人格
+let finalResult = null;
+let shuffledQuestions = []; // 随机排序后的题目
+
+const app = document.getElementById('app');
+
+// ========== 渲染函数 ==========
+
+// 显示开始页
+function renderStart() {
+  currentScreen = 'start';
+  app.innerHTML = `
+    <div class="start-screen">
+      <div class="icon-circle">
+        <i class="fas fa-horse"></i>
+      </div>
+      <h1>NMTI 牛马程度测试</h1>
+      <p class="subtitle">
+        你是纯血牛马还是摸鱼观音？是画饼胃王还是职场影帝？<br>
+        通过 15 个维度的精准测量，揭秘你的牛马浓度。
+      </p>
+      <div class="info-cards">
+        <div class="info-card">
+          <div class="num">30</div>
+          <div class="label">核心题目</div>
+        </div>
+        <div class="info-card">
+          <div class="num">15</div>
+          <div class="label">测量维度</div>
+        </div>
+        <div class="info-card">
+          <div class="num">18+</div>
+          <div class="label">人格类型</div>
+        </div>
+      </div>
+      <button class="btn-primary" onclick="startQuiz()">
+        开始测试 <i class="fas fa-arrow-right"></i>
+      </button>
+    </div>
+  `;
+}
+
+// Fisher-Yates 洗牌算法
+function shuffleArray(array) {
+  const shuffled = [...array];
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+  return shuffled;
+}
+
+// 开始测试
+function startQuiz() {
+  currentScreen = 'quiz';
+  currentQuestion = 0;
+  scores = new Array(15).fill(0);
+  gateTriggered = false;
+  isDrunkMode = false;
+  finalResult = null;
+  shuffledQuestions = shuffleArray(questions); // 随机排序题目
+  renderQuestion();
+}
+
+// 获取当前题目所属分类
+function getCategoryForDim(dimIndex) {
+  const mapping = [0,0,0, 1,1,1, 2,2,2, 3,3,3, 4,4,4];
+  return categories[mapping[dimIndex]];
+}
+
+// 渲染题目
+function renderQuestion() {
+  if (currentScreen !== 'quiz') return;
+
+  const q = shuffledQuestions[currentQuestion];
+  const cat = getCategoryForDim(q.dim);
+  const progress = ((currentQuestion) / 30) * 100;
+  const letters = ['A', 'B', 'C'];
+
+  app.innerHTML = `
+    <div class="quiz-screen">
+      <div class="quiz-header">
+        <div class="quiz-top-bar">
+          <span class="category-tag"><i class="fas fa-tag" style="margin-right:4px"></i>${cat.name}</span>
+          <span class="progress-text">${currentQuestion + 1} / 30</span>
+        </div>
+        <div class="progress-bar-track">
+          <div class="progress-bar-fill" style="width: ${progress}%"></div>
+        </div>
+      </div>
+      <div class="question-card entering" id="qCard">
+        <div class="question-number">第 ${currentQuestion + 1} 题</div>
+        <div class="question-text">${q.text}</div>
+        <div class="options-list">
+          ${q.options.map((opt, i) => `
+            <button class="option-btn" onclick="selectOption(${i})" aria-label="选项${letters[i]}">
+              <span class="option-letter">${letters[i]}</span>
+              <span>${opt}</span>
+            </button>
+          `).join('')}
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+// 选择选项
+function selectOption(index) {
+  if (isAnimating) return;
+  isAnimating = true;
+
+  // 计分：A=1, B=2, C=3
+  const q = shuffledQuestions[currentQuestion];
+  scores[q.dim] += (index + 1);
+
+  // 按钮选中效果
+  const btns = document.querySelectorAll('.option-btn');
+  btns.forEach((btn, i) => {
+    if (i === index) btn.classList.add('selected');
+    btn.style.pointerEvents = 'none';
+  });
+
+  // 延迟切换到下一题
+  setTimeout(() => {
+    const card = document.getElementById('qCard');
+    if (card) {
+      card.classList.remove('entering');
+      card.classList.add('exiting');
+    }
+
+    setTimeout(() => {
+      currentQuestion++;
+
+      // 检查是否完成30题
+      if (currentQuestion >= 30) {
+        // 进入补充题判断
+        renderGateQuestion();
+      } else {
+        renderQuestion();
+      }
+      isAnimating = false;
+    }, 300);
+  }, 400);
+}
+
+// 渲染补充触发题
+function renderGateQuestion() {
+  const letters = ['A', 'B', 'C'];
+
+  app.innerHTML = `
+    <div class="quiz-screen">
+      <div class="quiz-header">
+        <div class="quiz-top-bar">
+          <span class="category-tag"><i class="fas fa-star" style="margin-right:4px"></i>附加题</span>
+          <span class="progress-text">31 / 31</span>
+        </div>
+        <div class="progress-bar-track">
+          <div class="progress-bar-fill" style="width: 100%"></div>
+        </div>
+      </div>
+      <div class="question-card entering" id="qCard">
+        <div class="question-number">隐藏题目</div>
+        <div class="question-text">${drinkGateQ.text}</div>
+        <div class="options-list">
+          ${drinkGateQ.options.map((opt, i) => `
+            <button class="option-btn" onclick="selectGateOption(${i})" aria-label="选项${letters[i]}">
+              <span class="option-letter">${letters[i]}</span>
+              <span>${opt}</span>
+            </button>
+          `).join('')}
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+// 选择补充题选项
+function selectGateOption(index) {
+  if (isAnimating) return;
+  isAnimating = true;
+
+  const btns = document.querySelectorAll('.option-btn');
+  btns.forEach((btn, i) => {
+    if (i === index) btn.classList.add('selected');
+    btn.style.pointerEvents = 'none';
+  });
+
+  setTimeout(() => {
+    const card = document.getElementById('qCard');
+    if (card) {
+      card.classList.remove('entering');
+      card.classList.add('exiting');
+    }
+
+    setTimeout(() => {
+      // 选项C（index=2）是"疯狂投简历面试"，触发下一题
+      if (index === 2) {
+        gateTriggered = true;
+        renderFollowQuestion();
+      } else {
+        // 直接计算结果
+        calculateAndShowResult();
+      }
+      isAnimating = false;
+    }, 300);
+  }, 400);
+}
+
+// 渲染追加题
+function renderFollowQuestion() {
+  const letters = ['A', 'B'];
+
+  app.innerHTML = `
+    <div class="quiz-screen">
+      <div class="quiz-header">
+        <div class="quiz-top-bar">
+          <span class="category-tag"><i class="fas fa-star" style="margin-right:4px"></i>追加题</span>
+          <span class="progress-text">31+ / 31</span>
+        </div>
+        <div class="progress-bar-track">
+          <div class="progress-bar-fill" style="width: 100%"></div>
+        </div>
+      </div>
+      <div class="question-card entering" id="qCard">
+        <div class="question-number">隐藏触发题</div>
+        <div class="question-text">${drinkFollowQ.text}</div>
+        <div class="options-list">
+          ${drinkFollowQ.options.map((opt, i) => `
+            <button class="option-btn" onclick="selectFollowOption(${i})" aria-label="选项${letters[i]}">
+              <span class="option-letter">${letters[i]}</span>
+              <span>${opt}</span>
+            </button>
+          `).join('')}
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+// 选择追加题选项
+function selectFollowOption(index) {
+  if (isAnimating) return;
+  isAnimating = true;
+
+  const btns = document.querySelectorAll('.option-btn');
+  btns.forEach((btn, i) => {
+    if (i === index) btn.classList.add('selected');
+    btn.style.pointerEvents = 'none';
+  });
+
+  setTimeout(() => {
+    // 选项B（index=1）是"裸辞也在所不惜"，触发润人人格
+    if (index === 1) {
+      isDrunkMode = true;
+    }
+    calculateAndShowResult();
+    isAnimating = false;
+  }, 500);
+}
+
+// ========== 计算逻辑 ==========
+
+// 分数转等级
+function sumToLevel(score) {
+  if (score <= 3) return 'L';
+  if (score === 4) return 'M';
+  return 'H';
+}
+
+// 计算结果并渲染
+function calculateAndShowResult() {
+  currentScreen = 'result';
+
+  // 计算每个维度等级
+  const levels = scores.map(s => sumToLevel(s));
+  const levelValues = levels.map(l => l === 'L' ? 1 : l === 'M' ? 2 : 3);
+
+  // 如果触发润人人格
+  if (isDrunkMode) {
+    finalResult = { ...specialPersonalities.RUN, similarity: 100, levels, levelValues };
+    renderResult();
+    return;
+  }
+
+  // 常规匹配：计算与每种人格的曼哈顿距离
+  let bestMatch = null;
+  let bestDist = Infinity;
+  let bestSimilarity = 0;
+
+  personalities.forEach(p => {
+    const patternValues = p.pattern.split('').map(c => c === 'L' ? 1 : c === 'M' ? 2 : 3);
+    let dist = 0;
+    for (let i = 0; i < 15; i++) {
+      dist += Math.abs(levelValues[i] - patternValues[i]);
+    }
+    const similarity = Math.max(0, Math.round((1 - dist / 30) * 100));
+
+    if (dist < bestDist) {
+      bestDist = dist;
+      bestMatch = p;
+      bestSimilarity = similarity;
+    }
+  });
+
+  // 兜底机制：最高匹配度<60%时触发机器人人格
+  if (bestSimilarity < 60) {
+    finalResult = { ...specialPersonalities.RRRR, similarity: bestSimilarity, levels, levelValues };
+  } else {
+    finalResult = { ...bestMatch, similarity: bestSimilarity, levels, levelValues };
+  }
+
+  renderResult();
+}
+
+// ========== 渲染结果页 ==========
+function renderResult() {
+  if (!finalResult) return;
+
+  const r = finalResult;
+
+  // 维度分组
+  const groups = [
+    { title: '认知模型 C', dims: [0, 1, 2] },
+    { title: '情绪模型 E', dims: [3, 4, 5] },
+    { title: '态度模型 A', dims: [6, 7, 8] },
+    { title: '行动驱力 Ac', dims: [9, 10, 11] },
+    { title: '社交模型 So', dims: [12, 13, 14] }
+  ];
+
+  app.innerHTML = `
+    <div class="result-screen">
+      <div class="result-badge" style="background: linear-gradient(135deg, ${r.color}, ${r.color}dd);">
+        <i class="fas ${r.icon}"></i>
+      </div>
+      <div class="result-type-code">${r.code}</div>
+      <div class="result-type-name">${r.name}</div>
+      <div class="result-match">匹配度 ${r.similarity}%</div>
+      <p class="result-desc">${r.desc}</p>
+
+      <div class="dimensions-card">
+        <h3><i class="fas fa-chart-bar" style="margin-right:6px; color:var(--accent)"></i>维度详情</h3>
+        ${groups.map(g => `
+          <div class="dim-group">
+            <div class="dim-group-title">${g.title}</div>
+            ${g.dims.map(di => {
+              const lv = r.levels[di];
+              const name = dimNames[di];
+              const desc = dimLevelDesc[name][lv];
+              return `
+                <div class="dim-row">
+                  <span class="dim-label" title="${desc}">${name.split(' ')[1]}</span>
+                  <div class="dim-bar-track">
+                    <div class="dim-bar-fill ${lv}" style="width: 0%" data-target="${lv === 'L' ? '33.3' : lv === 'M' ? '66.6' : '100'}"></div>
+                  </div>
+                  <span class="dim-level ${lv}" title="${desc}">${lv}</span>
+                </div>
+              `;
+            }).join('')}
+          </div>
+        `).join('')}
+      </div>
+
+      <div class="result-actions">
+        <button class="btn-primary" onclick="renderStart()">
+          <i class="fas fa-redo"></i> 重新测试
+        </button>
+      </div>
+    </div>
+  `;
+
+  // 延迟触发维度条动画
+  setTimeout(() => {
+    document.querySelectorAll('.dim-bar-fill').forEach(bar => {
+      const target = bar.getAttribute('data-target');
+      bar.style.width = target + '%';
+    });
+  }, 200);
+}
+
+// Toast 提示
+function showToast(msg) {
+  const toast = document.getElementById('toast');
+  toast.textContent = msg;
+  toast.classList.add('visible');
+  setTimeout(() => toast.classList.remove('visible'), 2500);
+}
+
+// ========== 初始化 ==========
+renderStart();
+</script>
+</body>
+</html>
